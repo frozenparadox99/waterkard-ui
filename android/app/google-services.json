@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "550933708506",
+    "project_id": "waterkard-d313f",
+    "storage_bucket": "waterkard-d313f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550933708506:android:57180137a9af0fa5992fe3",
+        "android_client_info": {
+          "package_name": "com.algrus.waterkard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550933708506-23622kcfdd0s38hed9kte7irr40se7v2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.algrus.waterkard",
+            "certificate_hash": "ff59736e7c3e6452cca7a0d0e19535413f2968f8"
+          }
+        },
+        {
+          "client_id": "550933708506-umf7dbvo9p2ga8cuk372sba11nrt0frl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDA-7SewGG9ae5KWBu33afNzbT588UhiQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550933708506-umf7dbvo9p2ga8cuk372sba11nrt0frl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

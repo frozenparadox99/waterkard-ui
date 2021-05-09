@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
+import 'package:waterkard/ui/pages/vendor_registration_page.dart';
 
 class ChooseUserTypePage extends StatefulWidget {
   const ChooseUserTypePage({Key key}) : super(key: key);
@@ -9,6 +10,7 @@ class ChooseUserTypePage extends StatefulWidget {
 }
 
 class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +115,8 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                           child: RaisedButton(
                             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
                             onPressed: () {
-                              print("RaisedButton");
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(

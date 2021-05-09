@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/vendor_login_page.dart';
 
 class ChooseUserTypePage extends StatefulWidget {
   const ChooseUserTypePage({Key key}) : super(key: key);
@@ -61,7 +62,8 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                           child: RaisedButton(
                             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
                             onPressed: () {
-                              print("RaisedButton");
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(

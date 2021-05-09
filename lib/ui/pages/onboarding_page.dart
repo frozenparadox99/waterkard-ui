@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:waterkard/ui/pages/choose_user_type_page.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({Key key}) : super(key: key);
@@ -73,11 +74,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
         pages: pages,
         onDone: () {
           // When done button is press
-          print('Done Pressed');
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => ChooseUserTypePage()));
         },
         onSkip: () {
           // You can also override onSkip callback
-          print('Skip Pressed');
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => ChooseUserTypePage()));
         },
         showSkipButton: true,
         skip: const Text('Skip',style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black)),

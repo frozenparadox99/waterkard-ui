@@ -1,40 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
-import 'package:waterkard/ui/pages/vendor_details_pages/vendor_get_details.dart';
 
-class VendorRegistrationPage extends StatefulWidget {
-  const VendorRegistrationPage({Key key}) : super(key: key);
+class VendorGetDetails extends StatefulWidget {
+  final String phoneNumber;
+  final String brand;
+  final String fullBrandName;
+  final String stateOfIndia;
+  VendorGetDetails(this.phoneNumber,this.brand,this.fullBrandName,this.stateOfIndia);
 
   @override
-  _VendorRegistrationPageState createState() => _VendorRegistrationPageState();
+  _VendorGetDetailsState createState() => _VendorGetDetailsState();
 }
 
-class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
+class _VendorGetDetailsState extends State<VendorGetDetails> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneNumberController = TextEditingController();
-  final _brandController = TextEditingController();
-  final _fullBrandNameController = TextEditingController();
-  final  _statesOfIndia = [
-    {
-      "display":"Maharashtra",
-      "value":"Maharashtra",
-    },
-    {
-      "display":"Karnataka",
-      "value":"Karnataka",
-    },
-    {
-      "display":"Uttar Pradesh",
-      "value":"Uttar Pradesh",
-    },
-    ];
+  final _coolJarStockController = TextEditingController();
+  final _bottleJarStockController = TextEditingController();
+  final _createGroupController = TextEditingController();
+  final _driverNameController = TextEditingController();
+  final _driverNumberController = TextEditingController();
 
-  String currentStateSelected;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentStateSelected = "";
+
   }
 
   @override
@@ -107,14 +96,16 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
                   InkWell(
                     onTap: () {
                       if (_formKey.currentState.validate()) {
-                        print(_phoneNumberController.text);
-                        print(_brandController.text);
-                        print(_fullBrandNameController.text);
-                        print(currentStateSelected);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => VendorGetDetails(_phoneNumberController.text, _brandController.text, _fullBrandNameController.text, currentStateSelected)),
-                        );
+                        print(_coolJarStockController.text);
+                        print(_bottleJarStockController.text);
+                        print(_createGroupController.text);
+                        print(_driverNameController.text);
+                        print(_driverNumberController.text);
+                        print(widget.stateOfIndia);
+                        print(widget.fullBrandName);
+                        print(widget.brand);
+                        print(widget.phoneNumber);
+
                       }
                     },
                     child: Container(
@@ -197,17 +188,16 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
-              controller: _fullBrandNameController,
+              keyboardType: TextInputType.number,
+              controller: _coolJarStockController,
               validator: (String value) {
                 if (value.isEmpty) {
-                  return 'Full Business Name cannot be empty';
-                } else if (value.length < 3) {
-                  return 'Full Business Name must be at least 3 characters long.';
+                  return 'Cool Jar stock can not be empty';
                 }
                 return null;
               },
               decoration: InputDecoration(
-                labelText: 'Full Business Name',
+                labelText: 'Cool Jar Stock',
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0)),
               ),
@@ -216,17 +206,52 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
-              controller: _brandController,
+              keyboardType: TextInputType.number,
+              controller: _bottleJarStockController,
               validator: (String value) {
                 if (value.isEmpty) {
-                  return 'Brand cannot be empty';
-                } else if (value.length < 3) {
-                  return 'Brand must be at least 3 characters long.';
+                  return 'Bottle Jar stock can not be empty';
                 }
                 return null;
               },
               decoration: InputDecoration(
-                labelText: 'Brand',
+                labelText: 'Bottle Jar Stock',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+
+              controller: _createGroupController,
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Group Name can not be empty';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: 'Create Group',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+
+              controller: _driverNameController,
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Driver Name can not be empty';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: 'Add Driver Name',
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0)),
               ),
@@ -236,7 +261,7 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
               keyboardType: TextInputType.phone,
-              controller: _phoneNumberController,
+              controller: _driverNumberController,
               validator: (String value) {
                 if (value.isEmpty) {
                   return 'Mobile Number cannot be empty';
@@ -246,39 +271,13 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
                 return null;
               },
               decoration: InputDecoration(
-                labelText: 'Mobile Number',
+                labelText: 'Driver Mobile Number',
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0)),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropDownFormField(
-              validator: (dynamic value){
-                if(value == null){
-                  return 'State cannot be empty';
-                }
-                return null;
-              },
-              titleText: 'State',
-              value: currentStateSelected,
-              onSaved: (value) {
-                setState(() {
-                  currentStateSelected = value;
-                });
-              },
-              onChanged: (value) {
-                setState(() {
-                  currentStateSelected= value;
-                });
-              },
-              dataSource: _statesOfIndia,
-              textField: 'display',
-              valueField: 'value',
 
-            ),
-          ),
 
 
         ],

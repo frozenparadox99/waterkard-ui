@@ -12,14 +12,14 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   var pages = [
     PageViewModel(
-        title: "Title of the first page",
+        title: "Add Your Stock Jar",
         body:
-        "Here you can write the description of the page, to explain someting...",
+        "Through this app you can manage your inventory with ease",
         image: Center(
-          child: Image.asset("assets/onboarding-image-1.png", height: 175.0),
+          child: Image.asset("assets/waterkard.png", height: 175.0),
         ),
         footer: Image.asset(
-          'assets/waterkard.png',
+          'assets/onboarding-image-3.jpg',
           height: 100.0,
           fit: BoxFit.cover,
         ),
@@ -52,7 +52,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         body:
         "Here you can write the description of the page, to explain someting...",
         image: Center(
-          child: Image.asset("assets/onboarding-image-3.jpg", height: 175.0),
+          child: Image.asset("assets/onboarding-image-4.png", height: 175.0),
         ),
         footer: Image.asset(
           'assets/waterkard.png',

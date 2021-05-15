@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/add_new_customer_pages/customer_card.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
@@ -29,7 +30,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle),
-            onPressed: ()  {},
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => CustomerCard()));
+            },
           ),
           IconButton(
             icon: Icon(Icons.filter_alt),

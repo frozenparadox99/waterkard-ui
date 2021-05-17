@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -137,19 +138,14 @@ class _CustomerCardState extends State<CustomerCard> {
                   label: 'Deposit',
                   hintText: 'Enter Customer Deposit',
                 ),
-
-
-              ],
-            ),
-            CardSettingsSection(
-              header: CardSettingsHeader(
-                label: 'Actions',
-              ),
-              children: <CardSettingsWidget>[
-            CardSettingsButton(
-            label: 'SAVE',
-              backgroundColor: Color(0xFF80D8FF),
-            ),
+                CardSettingsButton(
+                  onPressed: (){
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => ProductCard()));
+                  },
+                  label: 'SAVE',
+                  backgroundColor: Color(0xFF80D8FF),
+                ),
                 CardSettingsButton(
                   label: 'RESET',
                   isDestructive: true,
@@ -157,8 +153,10 @@ class _CustomerCardState extends State<CustomerCard> {
                   textColor: Colors.white,
                   bottomSpacing: 4.0,
                 )
+
               ],
             ),
+
           ],
         ),
       ),

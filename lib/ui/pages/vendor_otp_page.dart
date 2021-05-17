@@ -5,7 +5,7 @@ import 'package:waterkard/ui/pages/vendor_home_page.dart';
 
 class VendorOtpPage extends StatefulWidget {
   final String phone;
-   VendorOtpPage(this.phone);
+  VendorOtpPage(this.phone);
 
   @override
   _VendorOtpPageState createState() => _VendorOtpPageState();
@@ -26,7 +26,6 @@ class _VendorOtpPageState extends State<VendorOtpPage> {
 
   @override
   void initState() {
-
     super.initState();
     _verifyPhone();
   }
@@ -39,8 +38,8 @@ class _VendorOtpPageState extends State<VendorOtpPage> {
               .signInWithCredential(credential)
               .then((value) async {
             if (value.user != null) {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => VendorHomePage()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => VendorHomePage()));
             }
           });
         },
@@ -59,7 +58,6 @@ class _VendorOtpPageState extends State<VendorOtpPage> {
         },
         timeout: Duration(seconds: 120));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -96,16 +94,19 @@ class _VendorOtpPageState extends State<VendorOtpPage> {
                 try {
                   await FirebaseAuth.instance
                       .signInWithCredential(PhoneAuthProvider.credential(
-                      verificationId: _verificationCode, smsCode: pin))
+                          verificationId: _verificationCode, smsCode: pin))
                       .then((value) async {
                     if (value.user != null) {
                       Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (context) => VendorHomePage()));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VendorHomePage()));
                     }
                   });
                 } catch (e) {
                   FocusScope.of(context).unfocus();
                   _scaffoldkey.currentState
+                      // ignore: deprecated_member_use
                       .showSnackBar(SnackBar(content: Text('invalid OTP')));
                 }
               },

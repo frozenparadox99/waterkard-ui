@@ -14,20 +14,20 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
   final _phoneNumberController = TextEditingController();
   final _brandController = TextEditingController();
   final _fullBrandNameController = TextEditingController();
-  final  _statesOfIndia = [
+  final _statesOfIndia = [
     {
-      "display":"Maharashtra",
-      "value":"Maharashtra",
+      "display": "Maharashtra",
+      "value": "Maharashtra",
     },
     {
-      "display":"Karnataka",
-      "value":"Karnataka",
+      "display": "Karnataka",
+      "value": "Karnataka",
     },
     {
-      "display":"Uttar Pradesh",
-      "value":"Uttar Pradesh",
+      "display": "Uttar Pradesh",
+      "value": "Uttar Pradesh",
     },
-    ];
+  ];
 
   String currentStateSelected;
   @override
@@ -41,7 +41,6 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
   Widget build(BuildContext context) {
     var scrWidth = MediaQuery.of(context).size.width;
     var scrHeight = MediaQuery.of(context).size.height;
-
 
     return SafeArea(
       child: Scaffold(
@@ -88,7 +87,6 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(
-
                       horizontal: 10.0,
                     ),
                     child: _buildForm(),
@@ -113,7 +111,12 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
                         print(currentStateSelected);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => VendorGetDetails(_phoneNumberController.text, _brandController.text, _fullBrandNameController.text, currentStateSelected)),
+                          MaterialPageRoute(
+                              builder: (context) => VendorGetDetails(
+                                  _phoneNumberController.text,
+                                  _brandController.text,
+                                  _fullBrandNameController.text,
+                                  currentStateSelected)),
                         );
                       }
                     },
@@ -167,7 +170,6 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
               ClipPath(
                 clipper: OuterClippedPart(),
                 child: Container(
-
                   color: Color(0xffbbb7f7),
                   width: scrWidth,
                   height: scrHeight,
@@ -255,8 +257,8 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropDownFormField(
-              validator: (dynamic value){
-                if(value == null){
+              validator: (dynamic value) {
+                if (value == null) {
                   return 'State cannot be empty';
                 }
                 return null;
@@ -270,17 +272,14 @@ class _VendorRegistrationPageState extends State<VendorRegistrationPage> {
               },
               onChanged: (value) {
                 setState(() {
-                  currentStateSelected= value;
+                  currentStateSelected = value;
                 });
               },
               dataSource: _statesOfIndia,
               textField: 'display',
               valueField: 'value',
-
             ),
           ),
-
-
         ],
       ),
     );

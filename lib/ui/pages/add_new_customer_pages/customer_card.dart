@@ -34,30 +34,29 @@ class _CustomerCardState extends State<CustomerCard> {
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle),
-            onPressed: ()  {},
+            onPressed: () {},
           ),
           IconButton(
             icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
+            onPressed: () {},
           ),
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: ()  {},
+            onPressed: () {},
           ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => VendorLoginPage()));
             },
           )
         ],
       ),
       body: Form(
-          key: _formKey,
+        key: _formKey,
         child: CardSettings(
-
           contentAlign: TextAlign.right,
           children: <CardSettingsSection>[
             CardSettingsSection(
@@ -97,7 +96,6 @@ class _CustomerCardState extends State<CustomerCard> {
                 ),
                 CardSettingsEmail(
                   icon: Icon(Icons.person),
-
                 ),
                 CardSettingsListPicker(
                   icon: Icon(Icons.group),
@@ -137,8 +135,6 @@ class _CustomerCardState extends State<CustomerCard> {
                   label: 'Deposit',
                   hintText: 'Enter Customer Deposit',
                 ),
-
-
               ],
             ),
             CardSettingsSection(
@@ -146,11 +142,13 @@ class _CustomerCardState extends State<CustomerCard> {
                 label: 'Actions',
               ),
               children: <CardSettingsWidget>[
-            CardSettingsButton(
-            label: 'SAVE',
-              backgroundColor: Color(0xFF80D8FF),
-            ),
                 CardSettingsButton(
+                  onPressed: () {},
+                  label: 'SAVE',
+                  backgroundColor: Color(0xFF80D8FF),
+                ),
+                CardSettingsButton(
+                  onPressed: () {},
                   label: 'RESET',
                   isDestructive: true,
                   backgroundColor: Colors.red,

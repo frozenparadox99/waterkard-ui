@@ -15,10 +15,8 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
   User user;
   TextEditingController _controller = TextEditingController();
 
-
   @override
   void initState() {
-
     super.initState();
     getCurrentUser();
   }
@@ -27,66 +25,72 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
     User _user = _firebaseAuth.currentUser;
     setState(() {
       user = _user;
-
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
     print(user);
-    return user!=null ? VendorHomePage():
-    Scaffold(
-      appBar: AppBar(
-        title: Text('Phone Auth'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(children: [
-            Container(
-              margin: EdgeInsets.only(top: 60),
-              child: Center(
-                child: Text(
-                  'Phone Authentication',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-                ),
-              ),
+    return user != null
+        ? VendorHomePage()
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Phone Auth'),
             ),
-            Container(
-              margin: EdgeInsets.only(top: 40, right: 10, left: 10),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Phone Number',
-                  prefix: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text('+91'),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 60),
+                    child: Center(
+                      child: Text(
+                        'Phone Authentication',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 28),
+                      ),
+                    ),
                   ),
-                ),
-                maxLength: 10,
-                keyboardType: TextInputType.number,
-                controller: _controller,
-              ),
-            )
-          ]),
-          Container(
-            margin: EdgeInsets.all(10),
-            width: double.infinity,
-            child: FlatButton(
-              color: Colors.blue,
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => VendorOtpPage(_controller.text)));
-
-              },
-              child: Text(
-                'Next',
-                style: TextStyle(color: Colors.white),
-              ),
+                  Container(
+                    margin: EdgeInsets.only(top: 40, right: 10, left: 10),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        hintText: 'Phone Number',
+                        prefix: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text('+91'),
+                        ),
+                      ),
+                      maxLength: 10,
+                      keyboardType: TextInputType.number,
+                      controller: _controller,
+                    ),
+                  )
+                ]),
+                Container(
+                  margin: EdgeInsets.all(10),
+                  width: double.infinity,
+                  // ignore: deprecated_member_use
+                  child: FlatButton(
+                    color: Colors.blue,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  VendorOtpPage(_controller.text)));
+                    },
+                    child: Text(
+                      'Next',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
-    );
+          );
   }
 }

@@ -16,7 +16,6 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
     return Scaffold(
       backgroundColor: Color(0xffF9F9F9),
       body: Column(
-
         children: [
           Stack(
             children: [
@@ -46,14 +45,21 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Yes I Am!", style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                        ),),
+                        Text(
+                          "Yes I Am!",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
                       ],
                     ),
                     Row(
-                      children: [SizedBox(height: 60,)],
+                      children: [
+                        SizedBox(
+                          height: 60,
+                        )
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -61,15 +67,20 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                         SizedBox(
                           width: 200,
                           height: 50,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 30),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => VendorLoginPage()));
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(30))),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
                             child: Text(
                               "Vendor",
                               style: TextStyle(color: Colors.white),
@@ -79,7 +90,11 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                       ],
                     ),
                     Row(
-                      children: [SizedBox(height: 30,)],
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        )
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -87,14 +102,17 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                         SizedBox(
                           width: 200,
                           height: 50,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 30),
                             onPressed: () {
                               print("RaisedButton");
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(30))),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
                             child: Text(
                               "Driver",
                               style: TextStyle(color: Colors.white),
@@ -104,7 +122,11 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                       ],
                     ),
                     Row(
-                      children: [SizedBox(height: 30,)],
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        )
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -112,15 +134,21 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                         SizedBox(
                           width: 200,
                           height: 50,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 30),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          VendorRegistrationPage()));
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(30))),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
                             child: Text(
                               "New User",
                               style: TextStyle(color: Colors.white),
@@ -129,12 +157,9 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                         ),
                       ],
                     )
-
                   ],
                 ),
               ),
-
-
             ],
           )
         ],
@@ -143,18 +168,20 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
   }
 }
 
-
-class pathPainter extends CustomPainter{
+class pathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint();
     paint.color = Color(0xffE4E2FF);
     paint.style = PaintingStyle.fill;
     var path = Path();
-    path.moveTo(0, size.height*0.4);
-    path.quadraticBezierTo(size.width*0.35, size.height*0.40, size.width*0.58, size.height*0.6);
-    path.quadraticBezierTo(size.width*0.72, size.height*0.8, size.width*0.92, size.height*0.8);
-    path.quadraticBezierTo(size.width*0.98, size.height*0.8, size.width, size.height*0.82);
+    path.moveTo(0, size.height * 0.4);
+    path.quadraticBezierTo(size.width * 0.35, size.height * 0.40,
+        size.width * 0.58, size.height * 0.6);
+    path.quadraticBezierTo(size.width * 0.72, size.height * 0.8,
+        size.width * 0.92, size.height * 0.8);
+    path.quadraticBezierTo(
+        size.width * 0.98, size.height * 0.8, size.width, size.height * 0.82);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
@@ -166,5 +193,4 @@ class pathPainter extends CustomPainter{
     // TODO: implement shouldRepaint
     return true;
   }
-
 }

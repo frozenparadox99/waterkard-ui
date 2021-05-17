@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
+import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 
 class Sidebar extends StatelessWidget {
   @override
@@ -25,14 +27,34 @@ class Sidebar extends StatelessWidget {
               color: Colors.blue,
               image: DecorationImage(
                   fit: BoxFit.fill,
-                  image: AssetImage(
-                      'assets/profile-bg3.jpg')),
+                  image: AssetImage('assets/profile-bg3.jpg')),
             ),
           ),
-          ListTile(
+          ExpansionTile(
             leading: Icon(Icons.bar_chart),
             title: Text('Inventory'),
-            onTap: () => null,
+            children: [
+              // ignore: deprecated_member_use
+              FlatButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DailyInventoryLoadPage()));
+                },
+                child: Text('Daily Inventory'),
+              ),
+              // ignore: deprecated_member_use
+              FlatButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TotalInventoryAddPage()));
+                },
+                child: Text('Total Inventory'),
+              ),
+            ],
           ),
           ListTile(
             leading: Icon(Icons.card_membership_outlined),

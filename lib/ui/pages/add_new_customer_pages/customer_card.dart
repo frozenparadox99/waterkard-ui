@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -34,29 +35,30 @@ class _CustomerCardState extends State<CustomerCard> {
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle),
-            onPressed: () {},
+            onPressed: ()  {},
           ),
           IconButton(
             icon: Icon(Icons.filter_alt),
-            onPressed: () {},
+            onPressed: ()  {},
           ),
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {},
+            onPressed: ()  {},
           ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => VendorLoginPage()));
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
             },
           )
         ],
       ),
       body: Form(
-        key: _formKey,
+          key: _formKey,
         child: CardSettings(
+
           contentAlign: TextAlign.right,
           children: <CardSettingsSection>[
             CardSettingsSection(
@@ -96,6 +98,7 @@ class _CustomerCardState extends State<CustomerCard> {
                 ),
                 CardSettingsEmail(
                   icon: Icon(Icons.person),
+
                 ),
                 CardSettingsListPicker(
                   icon: Icon(Icons.group),
@@ -135,28 +138,25 @@ class _CustomerCardState extends State<CustomerCard> {
                   label: 'Deposit',
                   hintText: 'Enter Customer Deposit',
                 ),
-              ],
-            ),
-            CardSettingsSection(
-              header: CardSettingsHeader(
-                label: 'Actions',
-              ),
-              children: <CardSettingsWidget>[
                 CardSettingsButton(
-                  onPressed: () {},
+                  onPressed: (){
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => ProductCard()));
+                  },
                   label: 'SAVE',
                   backgroundColor: Color(0xFF80D8FF),
                 ),
                 CardSettingsButton(
-                  onPressed: () {},
                   label: 'RESET',
                   isDestructive: true,
                   backgroundColor: Colors.red,
                   textColor: Colors.white,
                   bottomSpacing: 4.0,
                 )
+
               ],
             ),
+
           ],
         ),
       ),

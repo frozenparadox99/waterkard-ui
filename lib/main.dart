@@ -17,14 +17,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        secondaryHeaderColor: Colors.indigo[400],
+        secondaryHeaderColor: Colors.white,
         cardColor: Colors.white,
         appBarTheme: AppBarTheme(
           color: Color(0xFF5F6AF8),
         ),
         textTheme: TextTheme(
           subtitle1: TextStyle(color: Colors.grey[800]),
-          headline6: TextStyle(color: Colors.lightBlue[50]), // app header text
+          headline6: TextStyle(color: Colors.black), // app header text
         ),
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(color: Colors.indigo[400]), // style for labels

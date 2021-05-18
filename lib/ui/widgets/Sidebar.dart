@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 
@@ -69,7 +70,12 @@ class Sidebar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.car_rental),
             title: Text('Drivers'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllDrivers()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.notifications),

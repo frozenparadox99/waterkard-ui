@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
+// import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:waterkard/ui/pages/add_driver_pages/add_driver.dart';
+import 'package:waterkard/ui/pages/add_driver_pages/edit_driver.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
 import '../vendor_login_page.dart';
@@ -32,7 +34,10 @@ class _AllDriversState extends State<AllDrivers> {
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle),
-            onPressed: ()  {},
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => AddDriver()));
+            },
           ),
           IconButton(
             icon: Icon(Icons.filter_alt),
@@ -346,7 +351,8 @@ class Status extends StatelessWidget {
       ),
       child: InkWell(
         onTap: (){
-          print("Here");
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => EditDriver()));
         },
         child: Row(
           children: [

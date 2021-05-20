@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/add_group.dart';
+import 'package:waterkard/ui/pages/add_new_group_pages/edit_group.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
 import '../vendor_login_page.dart';
@@ -385,7 +386,8 @@ class GroupCard extends StatelessWidget {
                 icon: const Icon(Icons.edit),
                 tooltip: 'Edit',
                 onPressed: () {
-                  print("Pressed");
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => EditGroup()));
                 },
               ),
 

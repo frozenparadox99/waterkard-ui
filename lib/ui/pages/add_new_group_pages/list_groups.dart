@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waterkard/ui/pages/add_new_group_pages/add_group.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
 import '../vendor_login_page.dart';
@@ -114,8 +115,8 @@ class _ListGroupsState extends State<ListGroups> {
           IconButton(
             icon: Icon(Icons.add_circle),
             onPressed: ()  {
-              // Navigator.pushReplacement(
-              //     context, MaterialPageRoute(builder: (context) => AddDriver()));
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => AddGroup()));
             },
           ),
           IconButton(

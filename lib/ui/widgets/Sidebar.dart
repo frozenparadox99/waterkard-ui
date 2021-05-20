@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
+import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 import 'package:waterkard/ui/pages/my_products_pages/all_products.dart';
@@ -99,10 +100,31 @@ class Sidebar extends StatelessWidget {
                       builder: (context) => AllProducts()));
             },
           ),
-          ListTile(
+          ExpansionTile(
             leading: Icon(Icons.payment),
             title: Text('Payments'),
-            onTap: () => null,
+            children: [
+              // ignore: deprecated_member_use
+              FlatButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CustomerPaymentList()));
+                },
+                child: Text('Customer Payment'),
+              ),
+              // ignore: deprecated_member_use
+              FlatButton(
+                onPressed: () {
+                  // Navigator.pushReplacement(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => CustomerPaymentList()));
+                },
+                child: Text('Driver Payment     '),
+              ),
+            ],
           ),
           Divider(),
           ListTile(

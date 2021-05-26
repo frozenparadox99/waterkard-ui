@@ -6,6 +6,7 @@ import 'package:waterkard/ui/pages/driver_payment_pages/driver_payment_list.dart
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 import 'package:waterkard/ui/pages/my_products_pages/all_products.dart';
+import 'package:waterkard/ui/pages/order/orders_dashboard.dart';
 
 class Sidebar extends StatelessWidget {
   @override
@@ -64,41 +65,38 @@ class Sidebar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.card_membership_outlined),
             title: Text('Cards'),
-            onTap: ()=>null,
+            onTap: () => null,
           ),
           ListTile(
             leading: Icon(Icons.person),
             title: Text('Customer Group'),
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ListGroups()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListGroups()));
             },
           ),
           ListTile(
             leading: Icon(Icons.car_rental),
             title: Text('Drivers'),
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AllDrivers()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AllDrivers()));
             },
           ),
           ListTile(
             leading: Icon(Icons.notifications),
             title: Text('Orders'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => OrderDashboard()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.shop),
             title: Text('My Products'),
-            onTap: ()  {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AllProducts()));
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AllProducts()));
             },
           ),
           ExpansionTile(

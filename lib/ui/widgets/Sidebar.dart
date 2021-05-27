@@ -5,6 +5,7 @@ import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.
 import 'package:waterkard/ui/pages/driver_payment_pages/driver_payment_list.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
+import 'package:waterkard/ui/pages/invoice_pages/select_invoice.dart';
 import 'package:waterkard/ui/pages/my_products_pages/all_products.dart';
 import 'package:waterkard/ui/pages/order/orders_dashboard.dart';
 
@@ -129,7 +130,10 @@ class Sidebar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.inventory),
             title: Text('Invoice'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SelectInvoice()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.description),

@@ -594,7 +594,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                             backgroundColor: Colors.white,
                             child: Container(
                               width: 500,
-                              height: 400,
+                              height: 500,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,

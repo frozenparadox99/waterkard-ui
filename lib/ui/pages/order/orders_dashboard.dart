@@ -49,6 +49,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF5F6AF8),
       drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Order'),
@@ -193,20 +194,77 @@ class _OrderDashboardState extends State<OrderDashboard> {
           ),
         ],
       ),
-      body: Container(
-        child: Column(
-          children: [
-            OrderDisplay(
-              driver: "AB",
-              time: "08:30AM",
-              load: 10,
-            ),
-            OrderDisplay(
-              driver: "AB",
-              time: "08:30AM",
-              load: 10,
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(60),
+                topRight: Radius.circular(60),
+              )
+          ),
+          child: Column(
+            children: [
+              SizedBox(height: 40,),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Center(
+                      child: Text("All Orders", style: TextStyle(color: Colors.black, fontSize: 40),),
+                    ),
+
+                  ],
+                ),
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+              OrderDisplay(
+                driver: "Customer 1",
+                time: "08:30AM",
+                load: 10,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -555,7 +613,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                     Row(
                       children: [
                         Text(
-                          this.widget.time,
+                          "Time: ${this.widget.time}",
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -565,7 +623,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                           width: 20,
                         ),
                         Text(
-                          this.widget.load.toString(),
+                          "Qty: ${this.widget.load.toString()}",
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,

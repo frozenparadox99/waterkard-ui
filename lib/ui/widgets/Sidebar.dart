@@ -3,12 +3,14 @@ import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
 import 'package:waterkard/ui/pages/deposite_pages/deposite_list.dart';
+import 'package:waterkard/ui/pages/dispenser_pages/dispenser_list.dart';
 import 'package:waterkard/ui/pages/driver_payment_pages/driver_payment_list.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 import 'package:waterkard/ui/pages/invoice_pages/select_invoice.dart';
 import 'package:waterkard/ui/pages/my_products_pages/all_products.dart';
 import 'package:waterkard/ui/pages/order/orders_dashboard.dart';
+import 'package:waterkard/ui/pages/vendor_home_page.dart';
 
 class Sidebar extends StatelessWidget {
   @override
@@ -148,7 +150,7 @@ class Sidebar extends StatelessWidget {
                 title: Text('Dispensers'),
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DepositeList()));
+                      MaterialPageRoute(builder: (context) => DispenserList()));
                 },
               ),
             ],
@@ -171,7 +173,10 @@ class Sidebar extends StatelessWidget {
           ListTile(
             title: Text('How to use'),
             leading: Icon(Icons.info_outline),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => VendorHomePage()));
+            },
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/deposite_pages/deposite_update.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 class DepositeList extends StatefulWidget {
   @override
@@ -195,8 +196,8 @@ class Status extends StatelessWidget {
       ),
       child: InkWell(
         onTap: (){
-          // Navigator.pushReplacement(
-          //     context, MaterialPageRoute(builder: (context) => EditDriver()));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => DepositUpdate()));
         },
         child: Row(
           children: [

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/customer_card.dart';
+import 'package:waterkard/ui/pages/missing_jars_pages/tracking_jars.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
@@ -247,6 +248,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
                             controller: PageController(viewportFraction: 0.8,initialPage: 2),
                             children:TopCardList.map((e) {
                               return GestureDetector(
+                                onTap: (){
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(builder: (context) => TrackingJars()));
+                                },
 
                                 child: SingleCard(
                                   color: e["color"],

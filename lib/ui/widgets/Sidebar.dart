@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
+import 'package:waterkard/ui/pages/cards_customer/cards.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
 import 'package:waterkard/ui/pages/deposite_pages/deposite_list.dart';
 import 'package:waterkard/ui/pages/dispenser_pages/dispenser_list.dart';
@@ -69,7 +70,10 @@ class Sidebar extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.card_membership_outlined),
             title: Text('Cards'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CustomerCardPage()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.person),

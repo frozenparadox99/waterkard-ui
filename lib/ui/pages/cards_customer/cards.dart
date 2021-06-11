@@ -286,8 +286,22 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                   ],
                 ),
               ),
-              Text(item["name"],
-                style: cardNameTextStyle,),
+
+
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+
+                  children: <Widget>[
+                    Text(item["name"],
+                      style: cardNameTextStyle,),
+                    SizedBox(width: 50,),
+                    Icon(Icons.send_sharp,color: Colors.white,),
+                    SizedBox(width: 4,),
+                    Icon(Icons.add_circle_outline_sharp,color: Colors.white,),
+                    SizedBox(width: 4,),
+                    Icon(Icons.brightness_1_outlined,color: Colors.white,),
+
+                  ]),
 
               Container(
                 margin: EdgeInsets.only(top: 16),
@@ -455,11 +469,14 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
               ),
               Expanded(
                 child: Container(
-                  // clipBehavior: Clip.antiAlias,
-                  // alignment: Alignment.topLeft,
+                  clipBehavior: Clip.antiAlias,
+                  alignment: Alignment.topLeft,
                   decoration: BoxDecoration(
                       color: Colors.white,
-                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(48),
+                        topRight: Radius.circular(48),
+                      )),
                   child: CustomScrollView(
                     slivers: [
                       SliverToBoxAdapter(
@@ -497,23 +514,7 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                           ),
                         ),
                       ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 32, left: 32),
-                          child: Text(
-                            "Customers",
-                            style: titleTextStyle,
-                          ),
-                        ),
-                      ),
 
-
-
-                      ReorderableSliverList(
-                        delegate: ReorderableSliverChildListDelegate(_rows),
-
-                        onReorder: _onReorder,
-                      ),
 
                       SliverToBoxAdapter(
                         child: Padding(
@@ -538,7 +539,23 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
 
 
 
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 32, left: 32),
+                          child: Text(
+                            "Customers",
+                            style: titleTextStyle,
+                          ),
+                        ),
+                      ),
 
+
+
+                      ReorderableSliverList(
+                        delegate: ReorderableSliverChildListDelegate(_rows),
+
+                        onReorder: _onReorder,
+                      ),
 
 
 
@@ -603,7 +620,7 @@ class SingleCard extends StatelessWidget {
           children: [
             Container(
               height: 39,
-              width: 40,
+              width: 50,
               margin: EdgeInsets.only(top: 16, bottom: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -617,13 +634,13 @@ class SingleCard extends StatelessWidget {
                     width: 2,
                   ),
                   Text(
-                    page,
+                    "Info",
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                   ),
                 ],
               ),
             ),
-            Text(title,
+            Text("Total Stock: 200",
               style: cardNameTextStyle,),
             Container(
               margin: EdgeInsets.only(top: 16),
@@ -650,9 +667,36 @@ class SingleCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Loaded-Jars: 30", style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                            SizedBox(width: 40,),
+                            Text("Cust. Balance: 12", style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                          ],
+                        ),
                         SizedBox(height: 8,),
-                        Text(misc, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Sold: 2", style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                            SizedBox(width: 140,),
+                            Text("Empty: 2", style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                          ],
+                        ),
+                        SizedBox(height: 8,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Godown-Stock: 2", style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                            SizedBox(width: 40,),
+                            Text("Missing-Jars: 2", style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                          ],
+                        ),
+
                       ],
                     ),
                   )

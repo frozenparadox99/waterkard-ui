@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductCard extends StatefulWidget {
-  const ProductCard({Key key}) : super(key: key);
+  final String customerId;
+  ProductCard(this.customerId);
 
   @override
   _ProductCardState createState() => _ProductCardState();
@@ -15,13 +20,51 @@ class _ProductCardState extends State<ProductCard> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final GlobalKey<FormState> _productKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _rateKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _balanceKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _dispensersKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _depositKey = GlobalKey<FormState>();
   String uid;
+
+  String product;
+  String rate;
+  String balance;
+  String dispensers;
+  String deposit;
+
+  List allProductsForCustomer = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+  }
+
+  void getAllProducts () async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // var id = prefs.getString("vendorId");
+    // print(id);
+
+    if(widget.customerId!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/customer/products/all?customerId=${widget.customerId}";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["customerProducts"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["customerProducts"];
+
+        setState(() {
+          allProductsForCustomer = receivedProducts;
+        });
+      }
+
+    }
   }
 
   @override
@@ -78,29 +121,108 @@ class _ProductCardState extends State<ProductCard> {
                           initialValue: '18 Litre Jar',
                           hintText: 'Select Jar',
                           options: <String>['18 L Jar', '20 L Jar'],
-                          values: <String>['E', 'U'],
+                          values: <String>['18L', '20L'],
+                          onChanged: (value) {
+                            setState(() {
+                              product = value;
+                            });
+                          },
                         ),
                         CardSettingsText(
                           icon: Icon(Icons.money),
                           label: 'Rate',
                           hintText: 'Enter Rate Of Jar',
+                          key: _rateKey,
+                          onChanged: (value) {
+                            setState(() {
+                              rate = value;
+                            });
+                          },
                         ),
                         CardSettingsText(
                           icon: Icon(Icons.water_damage),
                           label: 'Balance',
                           hintText: 'Enter the number of previous jars',
+                          key: _balanceKey,
+                          onChanged: (value) {
+                            setState(() {
+                              balance = value;
+                            });
+                          },
                         ),
                         CardSettingsText(
                           icon: Icon(Icons.settings_display),
                           label: 'Dispensers',
                           hintText: 'Enter Dispensers',
+                          key: _dispensersKey,
+                          onChanged: (value) {
+                            setState(() {
+                              dispensers = value;
+                            });
+                          },
                         ),
                         CardSettingsText(
                           icon: Icon(Icons.credit_card),
                           label: 'Deposit',
                           hintText: 'Enter Customer Deposit',
+                          key: _depositKey,
+                          onChanged: (value) {
+                            setState(() {
+                              deposit = value;
+                            });
+                          },
                         ),
                         CardSettingsButton(
+                          onPressed: () async {
+                            if(_formKey.currentState.validate()){
+                              print(product);
+                              print(rate);
+                              print(balance);
+                              print(dispensers);
+                              print(deposit);
+                              print(widget.customerId);
+
+
+                              var newAddress = {
+                                "type":"Point",
+                                "coordinates":[12.9716,77.5946]
+                              };
+
+
+
+                              if(widget.customerId!=null){
+
+                                String apiURL =
+                                    "http://192.168.29.79:4000/api/v1/vendor/customer/add-product";
+                                var response = await http.post(Uri.parse(apiURL),
+                                    headers: <String, String>{
+                                      'Content-Type': 'application/json; charset=UTF-8',
+                                    },
+                                    body:jsonEncode( <String, dynamic>{
+                                      "product":product,
+                                      "balanceJars":balance,
+                                      "dispenser":dispensers,
+                                      "deposit":deposit,
+                                      "rate":rate,
+                                      "customer":widget.customerId
+                                    }));
+                                var body = response.body;
+
+                                var decodedJson = jsonDecode(body);
+
+                                print(body);
+                                print(decodedJson);
+
+
+
+                                getAllProducts();
+
+                              }
+
+
+                            }
+
+                          },
 
                           label: 'SAVE',
                           backgroundColor: Color(0xFF80D8FF),
@@ -177,147 +299,86 @@ class _ProductCardState extends State<ProductCard> {
               //   ],
               // ),
               SizedBox(height: 20.0,),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 18.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        CircleAvatar(
-                          backgroundColor: Color(0xFFD9D9D9),
-                          backgroundImage: AssetImage("assets/product-card-jar.jpg"),
-                          radius: 36.0,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            text: '18L Cool Jar',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: '\nPrice: Rs.50',
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Align(
-                        //   alignment: Alignment.bottomRight,
-                        //   child: Icon(
-                        //     Icons.arrow_forward_ios,
-                        //     color: Colors.grey[400],
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Divider(
-                      color: Colors.grey[200],
-                      height: 3,
-                      thickness: 1,
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        _iconBuilder(Icons.edit, 'Edit'),
-                        _iconBuilder(Icons.cancel, 'Delete'),
-                        _iconBuilder(Icons.person, 'Customer'),
-                        _iconBuilder(Icons.directions_car, 'Driver'),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 18.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        CircleAvatar(
-                          backgroundColor: Color(0xFFD9D9D9),
-                          backgroundImage: AssetImage("assets/onboarding-image-3.jpg"),
-                          radius: 36.0,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            text: '20L Bottle Jar',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: '\nPrice: Rs.50',
-                                style: TextStyle(
-                                  color: Colors.black45,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Align(
-                        //   alignment: Alignment.bottomRight,
-                        //   child: Icon(
-                        //     Icons.arrow_forward_ios,
-                        //     color: Colors.grey[400],
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Divider(
-                      color: Colors.grey[200],
-                      height: 3,
-                      thickness: 1,
-                    ),
-                    SizedBox(
-                      height: 8.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        _iconBuilder(Icons.edit, 'Edit'),
-                        _iconBuilder(Icons.cancel, 'Delete'),
-                        _iconBuilder(Icons.person, 'Customer'),
-                        _iconBuilder(Icons.directions_car, 'Driver'),
-                      ],
-                    )
-                  ],
-                ),
-              )
+
+
+              ...allProductsForCustomer.map((e) =>
+                _productCardBuilder(e["product"], e["rate"], e["balanceJars"], e["deposit"], e["dispenser"], e["_id"])
+              ).toList(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Container _productCardBuilder(productRes,rateRes,balanceJars,depositRes,dispenserRes,productIdRes){
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 18.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              CircleAvatar(
+                backgroundColor: Color(0xFFD9D9D9),
+                backgroundImage: productRes=="18L"?AssetImage("assets/product-card-jar.jpg") : AssetImage("assets/onboarding-image-3.jpg"),
+                radius: 36.0,
+              ),
+              RichText(
+                text: TextSpan(
+                  text: '$productRes Jar',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '\nPrice: Rs.$rateRes',
+                      style: TextStyle(
+                        color: Colors.black45,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Align(
+              //   alignment: Alignment.bottomRight,
+              //   child: Icon(
+              //     Icons.arrow_forward_ios,
+              //     color: Colors.grey[400],
+              //   ),
+              // ),
+            ],
+          ),
+          SizedBox(
+            height: 8.0,
+          ),
+          Divider(
+            color: Colors.grey[200],
+            height: 3,
+            thickness: 1,
+          ),
+          SizedBox(
+            height: 8.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _iconBuilder(Icons.edit, 'Edit'),
+              _iconBuilder(Icons.cancel, 'Delete'),
+              _iconBuilder(Icons.person, '$balanceJars'),
+              _iconBuilder(Icons.money, '$depositRes'),
+            ],
+          )
+        ],
       ),
     );
   }

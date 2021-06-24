@@ -340,7 +340,7 @@ class _CustomerCardState extends State<CustomerCard> {
 
                         if(decodedJson["success"]!=null && decodedJson["success"]==true){
                           Navigator.pushReplacement(
-                              context, MaterialPageRoute(builder: (context) => ProductCard()));
+                              context, MaterialPageRoute(builder: (context) => ProductCard(decodedJson["data"]["customer"]["_id"])));
                         }
 
                       }

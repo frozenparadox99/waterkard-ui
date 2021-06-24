@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:waterkard/ui/pages/vendor_details_pages/vendor_get_details.dart';
+import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/pages/vendor_registration_pages/general_details.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -173,19 +174,18 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                         await prefs.setString("vendorId", decodedJson["data"]["vendor"]["_id"]);
                                         var id = prefs.getString("vendorId");
                                         print(id);
+                                        if(id != null){
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => VendorLoginPage()),
+                                          );
+                                        }
 
                                       }
 
 
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) => VendorGetDetails(
-                                      //           _phoneNumberController.text,
-                                      //           _brandController.text,
-                                      //           _fullBrandNameController.text,
-                                      //           currentStateSelected)),
-                                      // );
+
                                     }
                                   },
                                   child: Container(

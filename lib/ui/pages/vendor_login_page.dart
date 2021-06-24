@@ -2,6 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/pages/vendor_otp_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VendorLoginPage extends StatefulWidget {
   const VendorLoginPage({Key key}) : super(key: key);
@@ -76,12 +80,32 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
                   // ignore: deprecated_member_use
                   child: FlatButton(
                     color: Colors.blue,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  VendorOtpPage(_controller.text)));
+                    onPressed: () async {
+                      print(_controller.text);
+                      String apiURL =
+                          "http://192.168.29.79:4000/api/v1/vendor?mobileNumber=%2B91${_controller.text}";
+                      var response = await http.get(Uri.parse(apiURL));
+                      var body = response.body;
+
+                      var decodedJson = jsonDecode(body);
+
+                      print(body);
+                      print(decodedJson);
+                      if(decodedJson["success"]!=null && decodedJson["success"] == true){
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        await prefs.setString("vendorId", decodedJson["data"]["vendor"]["_id"]);
+                        var id = prefs.getString("vendorId");
+                        print(id);
+                        if(id != null){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      VendorOtpPage(_controller.text)));
+                        }
+
+                      }
+
                     },
                     child: Text(
                       'Next',

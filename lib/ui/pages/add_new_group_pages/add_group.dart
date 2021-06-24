@@ -5,6 +5,11 @@ import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class AddGroup extends StatefulWidget {
   const AddGroup({Key key}) : super(key: key);
@@ -18,6 +23,8 @@ class _AddGroupState extends State<AddGroup> {
   String uid;
 
   String currentStateSelected;
+  String newGroupName;
+  String newGroupDescription;
 
   void initState() {
     // TODO: implement initState
@@ -108,6 +115,11 @@ class _AddGroupState extends State<AddGroup> {
                                     )
                                 ),
                                 child: TextField(
+                                  onChanged: (val){
+                                    setState(() {
+                                      newGroupName = val;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                       hintText: "Enter Group Name",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -123,6 +135,11 @@ class _AddGroupState extends State<AddGroup> {
                                     )
                                 ),
                                 child: TextField(
+                                  onChanged: (val){
+                                    setState(() {
+                                      newGroupDescription = val;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                       hintText: "Group Description",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -137,19 +154,55 @@ class _AddGroupState extends State<AddGroup> {
                         ),
                         SizedBox(height: 40,),
 
-                        Container(
-                          height: 50,
-                          margin: EdgeInsets.symmetric(horizontal: 50),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF5F6AF8),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text("Submit",style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold
-                            ),),
+                        InkWell(
+                          onTap: ()async{
+                            print(newGroupDescription);
+                            print(newGroupName);
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            var id = prefs.getString("vendorId");
+                            print(id);
+                            if(id!=null){
+                              String apiURL =
+                                  "http://192.168.29.79:4000/api/v1/vendor/group";
+                              var response = await http.post(Uri.parse(apiURL),
+                                  headers: <String, String>{
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                  },
+                                  body:jsonEncode( <String, dynamic>{
+                                    "name":newGroupName,
+                                    "description":newGroupDescription,
+                                    "vendor":id
+                                  }));
+                              var body = response.body;
+
+                              var decodedJson = jsonDecode(body);
+
+                              print(body);
+                              print(decodedJson);
+
+                              if(decodedJson["success"]!=null && decodedJson["success"]==true){
+                                Navigator.pushReplacement(
+                                    context, MaterialPageRoute(builder: (context) => ListGroups()));
+                              }
+
+
+                            }
+
+                          },
+                          child: Container(
+                            height: 50,
+                            margin: EdgeInsets.symmetric(horizontal: 50),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF5F6AF8),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text("Submit",style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                              ),),
+                            ),
                           ),
                         ),
                         SizedBox(height: 10,),

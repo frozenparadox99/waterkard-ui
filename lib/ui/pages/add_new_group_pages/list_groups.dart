@@ -5,6 +5,10 @@ import 'package:waterkard/ui/pages/add_new_group_pages/edit_group.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
 import '../vendor_login_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const kBackgroundColor = Color(0xffF6F6F6);
 const kAccentColor = Color(0xff03A5E1);
@@ -99,11 +103,61 @@ class ListGroups extends StatefulWidget {
 class _ListGroupsState extends State<ListGroups> {
 
   String uid;
+  List<TransactionModel> allGroupsForVendor = [];
+
 
   void initState() {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+    getAllGroups();
+  }
+
+  void getAllGroups () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/group/all?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["groups"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["groups"];
+        List<dynamic> formatted = receivedProducts.map((e) => {
+          "name":e["name"],
+          "colorType": kOrangeColor,
+          "usersInGroup": e["newcust"].length.toString(),
+          "information": "Assigned To:",
+          "driverAssigned":e["newdriv"].length == 0 ? "No Driver" :e["newdriv"][0]["name"],
+          "date":e["newdriv"].length == 0 ? "No Number" :e["newdriv"][0]["mobileNumber"],
+        }).toList();
+
+
+
+        setState(() {
+          allGroupsForVendor = formatted.map((item) => TransactionModel(
+            item['name'],
+
+            item['colorType'],
+
+            item['usersInGroup'],
+            item['information'],
+            item['driverAssigned'],
+            item['date'],
+          ))
+              .toList();
+        });
+
+      }
+
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -192,7 +246,7 @@ class _ListGroupsState extends State<ListGroups> {
               child: ListView.builder(
                 padding: EdgeInsets.only(left: 16, right: 8),
                 scrollDirection: Axis.horizontal,
-                itemCount: transactions.length,
+                itemCount: allGroupsForVendor.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: EdgeInsets.only(right: 8),
@@ -216,11 +270,11 @@ class _ListGroupsState extends State<ListGroups> {
                           top: 16,
                           left: 16,
                           child: Text(
-                            transactions[index].name,
+                            allGroupsForVendor[index].name,
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: transactions[index].colorType),
+                                color: allGroupsForVendor[index].colorType),
                           ),
                         ),
                         Positioned(
@@ -228,18 +282,18 @@ class _ListGroupsState extends State<ListGroups> {
                           left: 16,
                           child: Text(
 
-                                "Users: ${transactions[index].usersInGroup}",
+                                "Users: ${allGroupsForVendor[index].usersInGroup}",
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: transactions[index].colorType),
+                                color: allGroupsForVendor[index].colorType),
                           ),
                         ),
                         Positioned(
                           left: 16,
                           top: 90,
                           child: Text(
-                            transactions[index].information,
+                            allGroupsForVendor[index].information,
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
@@ -250,7 +304,7 @@ class _ListGroupsState extends State<ListGroups> {
                           left: 16,
                           bottom: 60,
                           child: Text(
-                            transactions[index].driverAssigned,
+                            allGroupsForVendor[index].driverAssigned,
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -261,7 +315,7 @@ class _ListGroupsState extends State<ListGroups> {
                           left: 16,
                           bottom: 22,
                           child: Text(
-                            transactions[index].date,
+                            allGroupsForVendor[index].date,
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
@@ -297,10 +351,14 @@ class _ListGroupsState extends State<ListGroups> {
               ),
             ),
 
-            GroupCard("Group 1",200),
-            GroupCard("Group 2",100),
-            GroupCard("Group 3",400),
-            GroupCard("Group 4",150),
+            // GroupCard("Group 1",200),
+            // GroupCard("Group 2",100),
+            // GroupCard("Group 3",400),
+            // GroupCard("Group 4",150),
+
+            ...allGroupsForVendor.map((e) =>
+                GroupCard(e.name, e.usersInGroup)
+            ).toList(),
 
 
 
@@ -315,7 +373,7 @@ class _ListGroupsState extends State<ListGroups> {
 
 class GroupCard extends StatelessWidget {
   final String groupName;
-  final int customers;
+  final String customers;
 
    GroupCard(this.groupName,this.customers);
 

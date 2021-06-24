@@ -6,6 +6,11 @@ import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class AddDriver extends StatefulWidget {
   const AddDriver({Key key}) : super(key: key);
@@ -33,11 +38,47 @@ class _AddDriverState extends State<AddDriver> {
   ];
 
   String currentStateSelected;
+  String newMobileNumber;
+  String newDriverName;
+
+  List<dynamic> allGroupNamesAndIds = [];
 
   void initState() {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+    getAllGroups();
+  }
+  void getAllGroups () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/group/all?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["groups"]!=null){
+        List<dynamic> receivedGroups = decodedJson["data"]["groups"];
+        receivedGroups.forEach((ele) {
+          setState(() {
+            allGroupNamesAndIds.add({
+              "display":ele["name"],
+              "value":ele["_id"]
+            }
+            );
+          });
+
+        });
+      }
+
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -123,6 +164,11 @@ class _AddDriverState extends State<AddDriver> {
                                     )
                                 ),
                                 child: TextField(
+                                  onChanged: (val){
+                                    setState(() {
+                                      newDriverName = val;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                       hintText: "Name of Driver",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -138,6 +184,11 @@ class _AddDriverState extends State<AddDriver> {
                                     )
                                 ),
                                 child: TextField(
+                                  onChanged: (val){
+                                    setState(() {
+                                      newMobileNumber = val;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                       hintText: "Mobile Number",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -171,7 +222,7 @@ class _AddDriverState extends State<AddDriver> {
                                       currentStateSelected = value;
                                     });
                                   },
-                                  dataSource: _groupNames,
+                                  dataSource: allGroupNamesAndIds,
                                   textField: 'display',
                                   valueField: 'value',
                                 ),
@@ -190,19 +241,57 @@ class _AddDriverState extends State<AddDriver> {
                         ),
                         SizedBox(height: 20,),
 
-                        Container(
-                          height: 50,
-                          margin: EdgeInsets.symmetric(horizontal: 50),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF5F6AF8),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text("Submit",style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold
-                            ),),
+                        InkWell(
+                          onTap: () async {
+                            print(currentStateSelected);
+                            print(newDriverName);
+                            print(newMobileNumber);
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            var id = prefs.getString("vendorId");
+                            print(id);
+                            if(id!=null){
+                              String apiURL =
+                                  "http://192.168.29.79:4000/api/v1/vendor/driver";
+                              var response = await http.post(Uri.parse(apiURL),
+                                  headers: <String, String>{
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                  },
+                                  body:jsonEncode( <String, dynamic>{
+                                    "name":newDriverName,
+                                    "mobileNumber":"+91$newMobileNumber",
+                                    "vendor":id,
+                                    "group":currentStateSelected
+                                  }));
+                              var body = response.body;
+
+                              var decodedJson = jsonDecode(body);
+
+                              print(body);
+                              print(decodedJson);
+
+                              if(decodedJson["success"]!=null && decodedJson["success"]==true){
+                                Navigator.pushReplacement(
+                                    context, MaterialPageRoute(builder: (context) => AllDrivers()));
+                              }
+
+
+                            }
+
+                          },
+                          child: Container(
+                            height: 50,
+                            margin: EdgeInsets.symmetric(horizontal: 50),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF5F6AF8),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text("Submit",style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                              ),),
+                            ),
                           ),
                         ),
                         SizedBox(height: 10,),

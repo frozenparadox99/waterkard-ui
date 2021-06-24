@@ -5,6 +5,11 @@ import 'package:waterkard/ui/pages/add_driver_pages/add_driver.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/edit_driver.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../vendor_login_page.dart';
 
 final Color activeColor = Color(0xffFF2E63);
@@ -18,11 +23,57 @@ class AllDrivers extends StatefulWidget {
 class _AllDriversState extends State<AllDrivers> {
   String selection;
   String uid;
+  List<Transaction> allDriversForVendor = [];
 
   void initState() {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+    getAllDrivers();
+  }
+
+  void getAllDrivers () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/driver/all?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["drivers"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["drivers"];
+        List<dynamic> formatted = receivedProducts.map((e) => {
+          "image": "assets/profile_user.jpg",
+          "name":e["name"],
+          "isEdit": true,
+          "groupName": e["group"]["name"],
+          "phoneNumber": e["mobileNumber"],
+          "passWord":e["password"],
+        }).toList();
+
+
+
+        setState(() {
+          allDriversForVendor = formatted.map((item) => Transaction(
+            image:item['image'],
+            name:item['name'],
+            groupName:item['groupName'],
+            isEdit:item['isEdit'],
+            phoneNumber:item['phoneNumber'],
+            passWord:item['passWord']
+          )).toList();
+        });
+
+      }
+
+    }
   }
 
   @override
@@ -181,14 +232,14 @@ class _AllDriversState extends State<AllDrivers> {
                         Expanded(
                           child: ListView.builder(
                             itemBuilder: (ctx, i) => TransactionTile(
-                              groupName: transactions[i].groupName,
-                              imageUrl: transactions[i].image,
-                              name: transactions[i].name,
-                              isEdit: transactions[i].isEdit,
-                              phoneNumber: transactions[i].phoneNumber,
-                              passWord: transactions[i].passWord,
+                              groupName: allDriversForVendor[i].groupName,
+                              imageUrl: allDriversForVendor[i].image,
+                              name: allDriversForVendor[i].name,
+                              isEdit: allDriversForVendor[i].isEdit,
+                              phoneNumber: allDriversForVendor[i].phoneNumber,
+                              passWord: allDriversForVendor[i].passWord,
                             ),
-                            itemCount: transactions.length,
+                            itemCount: allDriversForVendor.length,
                           ),
                         )
                       ],

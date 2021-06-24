@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/pages/vendor_registration_page.dart';
 import 'package:waterkard/ui/pages/driver_module/card/driver_homepage.dart';
+import 'package:waterkard/ui/pages/vendor_registration_pages/general_details.dart';
 
 class ChooseUserTypePage extends StatefulWidget {
   const ChooseUserTypePage({Key key}) : super(key: key);
@@ -147,7 +148,7 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          VendorRegistrationPage()));
+                                          GeneralDetailsPage()));
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(

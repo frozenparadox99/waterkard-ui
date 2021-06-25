@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/add_jar.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_remove.dart';
+import 'package:waterkard/ui/widgets/Sidebar.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TotalInventoryAddPage extends StatefulWidget {
   @override
@@ -8,19 +14,125 @@ class TotalInventoryAddPage extends StatefulWidget {
 }
 
 class _TotalInventoryAddPageState extends State<TotalInventoryAddPage> {
+
+  List<dynamic> totalInvForVendor = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getTotalInventory();
+  }
+
+  void getTotalInventory () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/inventory/total?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["totalInventory"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["totalInventory"]["stock"];
+        List<dynamic> formatted = [];
+        if(receivedProducts.length!=0){
+          formatted = receivedProducts.map((e) => {
+            "coolJars": e["coolJarStock"].toString(),
+            "bottleJars": e["bottleJarStock"].toString(),
+            "date": "${DateTime.parse(e["dateAdded"]).day}/${DateTime.parse(e["dateAdded"]).month}/${DateTime.parse(e["dateAdded"]).year}" ,
+          }).toList();
+        }
+
+
+        setState(() {
+          totalInvForVendor = formatted;
+        });
+
+      }
+
+    }
+  }
+
+  Row tableEntries(date,coolJars,bottleJars){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Text(
+          date,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+          ),
+        ),
+        Text(
+          coolJars,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+          ),
+        ),
+        Text(
+          bottleJars,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+          ),
+        ),
+        Center(
+          child: IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => AddJar()));
+            },
+            icon: Icon(
+              Icons.edit,
+              color: Colors.black,
+              size: 18,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Sidebar(),
       appBar: AppBar(
-        title: Text('Stock Inventory'),
+        title: Text('Added Jars'),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.download_rounded,
-              color: Colors.white,
-            ),
-            onPressed: () {},
+            icon: Icon(Icons.add_circle),
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => AddJar()));
+            },
           ),
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              // await FirebaseAuth.instance.signOut();
+              // Navigator.pushReplacement(
+              //     context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+            },
+          )
         ],
       ),
       body: Container(
@@ -93,21 +205,14 @@ class _TotalInventoryAddPageState extends State<TotalInventoryAddPage> {
                               ),
                             ),
                             Text(
-                              'Time',
+                              'Cool Jars',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
                               ),
                             ),
                             Text(
-                              'Added',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              'Delete',
+                              'Bottle Jars',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
@@ -122,288 +227,55 @@ class _TotalInventoryAddPageState extends State<TotalInventoryAddPage> {
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '17-05-2021',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddJarPage()),
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '17-05-2021',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '17-05-2021',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '17-05-2021',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '17-05-2021',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '17-05-2021',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+
+                        ...totalInvForVendor.map((e) =>
+                            tableEntries(e["date"],e["coolJars"],e["bottleJars"])
+                        ).toList(),
+
+
+
+
+
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //   children: [
+                        //     Text(
+                        //       '17-05-2021',
+                        //       style: TextStyle(
+                        //         color: Colors.black,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //
+                        //     Text(
+                        //       '10',
+                        //       style: TextStyle(
+                        //         color: Colors.black,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //     Center(
+                        //       child: IconButton(
+                        //         onPressed: () {},
+                        //         icon: Icon(
+                        //           Icons.delete,
+                        //           color: Colors.red,
+                        //           size: 18,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     Center(
+                        //       child: IconButton(
+                        //         onPressed: () {},
+                        //         icon: Icon(
+                        //           Icons.edit,
+                        //           color: Colors.black,
+                        //           size: 18,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),

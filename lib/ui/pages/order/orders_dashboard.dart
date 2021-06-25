@@ -4,6 +4,13 @@ import 'package:waterkard/ui/pages/order/add_order.dart';
 import 'package:waterkard/ui/pages/order/filter_order.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../vendor_login_page.dart';
+
 final Color activeColor = Color(0xffFF2E63);
 final Color inactiveColor = Color(0xff6C73AE);
 const kBackgroundColor = Color(0xffF6F6F6);
@@ -33,11 +40,53 @@ class _OrderDashboardState extends State<OrderDashboard> {
   String currentStateSelected;
   int selectedRadio;
 
+  List<dynamic> allOrdersForVendor = [];
+
   void initState() {
     // TODO: implement initState
     super.initState();
     selectedRadio = 0;
     uid = FirebaseAuth.instance.currentUser.uid;
+    getAllOrders();
+  }
+
+  void getAllOrders () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/order/all?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["orders"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["orders"];
+        List<dynamic> formatted = [];
+        if(decodedJson["data"]["orders"].length!=0){
+          formatted = receivedProducts.map((e) => {
+            "load": e["jarQty"].toString(),
+            "product":e["product"]["product"],
+            "customerName": e["customer"]["name"],
+            "customerMobileNumber": e["customer"]["mobileNumber"],
+            "date": "${DateTime.parse(e["preferredDate"]).day}/${DateTime.parse(e["preferredDate"]).month}/${DateTime.parse(e["preferredDate"]).year}" ,
+            "jarQty":e["jarQty"].toString(),
+          }).toList();
+        }
+
+
+        setState(() {
+          allOrdersForVendor = formatted;
+        });
+
+      }
+
+    }
   }
 
   setSelectedRadioButton(int value) {
@@ -52,146 +101,31 @@ class _OrderDashboardState extends State<OrderDashboard> {
       backgroundColor: Color(0xFF5F6AF8),
       drawer: Sidebar(),
       appBar: AppBar(
-        title: Text('Order'),
+        title: Text('Groups'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add_box_outlined),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Dialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 1.0,
-                      backgroundColor: Colors.white,
-                      child: Container(
-                        width: 500,
-                        height: 300,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              'Select Type Of Order',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            ButtonBar(
-                              alignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Radio(
-                                          value: 1,
-                                          groupValue: selectedRadio,
-                                          activeColor: Colors.green,
-                                          onChanged: (val) {
-                                            setSelectedRadioButton(val);
-                                          },
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          'Add Customer Order',
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Radio(
-                                          value: 2,
-                                          groupValue: selectedRadio,
-                                          activeColor: Colors.green,
-                                          onChanged: (val) {
-                                            setSelectedRadioButton(val);
-                                          },
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          'Add Event Order',
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    RaisedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AddOrder();
-                                            });
-                                      },
-                                      child: Text('Next'),
-                                      color: Colors.blue,
-                                    ),
-                                    SizedBox(
-                                      width: 50,
-                                    ),
-                                    RaisedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Cancel'),
-                                      color: Colors.red,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  });
+            icon: Icon(Icons.add_circle),
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => AddOrder()));
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {},
           ),
           IconButton(
             icon: Icon(Icons.filter_alt),
-            onPressed: () {
-              Navigator.of(context)
-                  .push(new MaterialPageRoute(builder: (context) {
-                return FilterPage();
-              }));
-            },
+            onPressed: ()  {},
           ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+            },
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -218,51 +152,29 @@ class _OrderDashboardState extends State<OrderDashboard> {
                   ],
                 ),
               ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
-              OrderDisplay(
-                driver: "Customer 1",
-                time: "08:30AM",
-                load: 10,
-              ),
+
+              ...allOrdersForVendor.map((e) =>
+                  OrderDisplay(load: e["load"],
+                    product: e["product"],
+                    customerName: e["customerName"],
+                    customerMobileNumber: e["customerMobileNumber"],
+                    date: e["date"],
+                    jarQty: e["jarQty"],
+                  )
+              ).toList(),
+
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+              SizedBox(height: 40,),
+
+
             ],
           ),
         ),
@@ -272,9 +184,8 @@ class _OrderDashboardState extends State<OrderDashboard> {
 }
 
 class OrderDisplay extends StatefulWidget {
-  final String driver, time;
-  final int load;
-  OrderDisplay({this.driver, this.time, this.load});
+  final String load,product,customerName,customerMobileNumber,date,jarQty;
+  OrderDisplay({ this.load,this.product,this.customerName,this.customerMobileNumber,this.date,this.jarQty});
 
   @override
   _OrderDisplayState createState() => _OrderDisplayState();
@@ -317,25 +228,6 @@ class _OrderDisplayState extends State<OrderDisplay> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Added By:',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Balaji Trading Co.',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
                             'Product',
                             style: TextStyle(fontSize: 20),
                           ),
@@ -343,7 +235,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                             width: 20,
                           ),
                           Text(
-                            '20 Ltr Cool Jar',
+                            '${this.widget.product}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -362,7 +254,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                             width: 20,
                           ),
                           Text(
-                            'Datta Bapu',
+                            '${this.widget.customerName}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -381,7 +273,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                             width: 20,
                           ),
                           Text(
-                            '+918850563134',
+                            '${this.widget.customerMobileNumber}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -400,7 +292,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                             width: 20,
                           ),
                           Text(
-                            '23rd May 2021',
+                            '${this.widget.date}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -419,7 +311,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                             width: 20,
                           ),
                           Text(
-                            '10',
+                            '${this.widget.jarQty}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -604,7 +496,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      this.widget.driver,
+                      this.widget.customerName,
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -613,7 +505,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                     Row(
                       children: [
                         Text(
-                          "Time: ${this.widget.time}",
+                          "Time: ${this.widget.date}",
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -623,7 +515,7 @@ class _OrderDisplayState extends State<OrderDisplay> {
                           width: 20,
                         ),
                         Text(
-                          "Qty: ${this.widget.load.toString()}",
+                          "Qty: ${this.widget.load}",
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,

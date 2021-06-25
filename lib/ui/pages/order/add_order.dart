@@ -1,300 +1,283 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:waterkard/ui/pages/order/order_added_successfully.dart';
+import 'package:intl/intl.dart';
+import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
+import 'package:waterkard/ui/pages/vendor_login_page.dart';
+import 'package:waterkard/ui/widgets/Sidebar.dart';
+import 'package:card_settings/card_settings.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-final Color activeColor = Color(0xffFF2E63);
-final Color inactiveColor = Color(0xff6C73AE);
+import 'orders_dashboard.dart';
 
 class AddOrder extends StatefulWidget {
+  const AddOrder({Key key}) : super(key: key);
+
   @override
   _AddOrderState createState() => _AddOrderState();
 }
 
 class _AddOrderState extends State<AddOrder> {
-  String selection;
-  List<String> listItems = ["Recent", "Ascending", "Descending"];
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _nameKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _groupKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _customersKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _productsKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _jarKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _dateKey = GlobalKey<FormState>();
+  String uid;
+
+  var allGroupNames = <String>[];
+  var allGroupIds = <String>[];
+
+  List<dynamic> allCustomerNames = <String>[];
+  List<dynamic> allCustomerIds = <String>[];
+
+  List<String> customerProductNames = <String>[];
+  List<String> customerProductIds = <String>[];
+
+  String customerSelected="";
+  String productSelected="";
+  String jarQty = "";
+  DateTime date ;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    uid = FirebaseAuth.instance.currentUser.uid;
+
+    getAllCustomers();
+
+  }
+
+  void getAllCustomers () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/customer?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["customers"]!=null){
+        List<dynamic> receivedGroups = decodedJson["data"]["customers"];
+        receivedGroups.forEach((ele) {
+
+          setState(() {
+            allCustomerNames.add(ele["name"]);
+            allCustomerIds.add(ele["_id"]);
+          });
+        });
+      }
+
+    }
+  }
+
+  void getCustomerProducts (id) async {
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/customer/products/all?customerId=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["customerProducts"]!=null){
+        List<dynamic> receivedGroups = decodedJson["data"]["customerProducts"];
+        receivedGroups.forEach((ele) {
+
+          setState(() {
+            customerProductNames.add(ele["product"]);
+            customerProductIds.add(ele["_id"]);
+          });
+        });
+      }
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+    return Scaffold(
+      drawer: Sidebar(),
+      appBar: AppBar(
+        title: Text('Cards'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add_circle),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+            },
+          )
+        ],
       ),
-      elevation: 1.0,
-      backgroundColor: Colors.white,
-      child: Container(
-        width: 500,
-        height: 600,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Add Order',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
+      body: Form(
+        key: _formKey,
+        child: CardSettings(
+
+          contentAlign: TextAlign.right,
+          children: <CardSettingsSection>[
+            CardSettingsSection(
+              header: CardSettingsHeader(
+                label: 'Add New Order',
+                labelAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Customer',
-                  style: TextStyle(fontSize: 20),
+              children: <CardSettingsWidget>[
+                CardSettingsListPicker(
+                  icon: Icon(Icons.group),
+                  key: _customersKey,
+                  label: 'Customers',
+                  initialValue: 'Default',
+                  hintText: 'Select Customer',
+                  options: allCustomerNames,
+                  values: allCustomerIds,
+                  onChanged: (value) async{
+
+                    setState(() {
+                      customerSelected = value;
+                      customerProductNames=[];
+                      customerProductIds=[];
+                    });
+                    getCustomerProducts(value);
+                  },
                 ),
-                SizedBox(
-                  width: 20,
-                ),
-                DropdownButton(
-                  value: selection,
-                  hint: Text(
-                    "Choose",
-                    style: TextStyle(
-                      color: activeColor.withOpacity(0.5),
-                      fontSize: 17,
-                    ),
-                  ),
-                  dropdownColor: Color(0xff010A43),
-                  iconEnabledColor: activeColor,
-                  style: TextStyle(
-                    color: activeColor,
-                    fontSize: 17,
-                  ),
-                  items: listItems.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
+                CardSettingsListPicker(
+                  icon: Icon(Icons.group),
+                  key: _productsKey,
+                  label: 'Products',
+                  initialValue: 'Default',
+                  hintText: 'Select Product',
+                  options: customerProductNames,
+                  values: customerProductIds,
                   onChanged: (value) {
                     setState(() {
-                      selection = value;
+                      productSelected = value;
                     });
                   },
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Product',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                DropdownButton(
-                  value: selection,
-                  hint: Text(
-                    "Choose",
-                    style: TextStyle(
-                      color: activeColor.withOpacity(0.5),
-                      fontSize: 17,
-                    ),
-                  ),
-                  dropdownColor: Color(0xff010A43),
-                  iconEnabledColor: activeColor,
-                  style: TextStyle(
-                    color: activeColor,
-                    fontSize: 17,
-                  ),
-                  items: listItems.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
+                CardSettingsDatePicker(
+                  key: _dateKey,
+                  icon: Icon(Icons.calendar_today),
+                  label: 'Date',
+                  dateFormat: DateFormat.yMMMMd(),
+                  initialValue:  DateTime(2020, 10, 10, 20, 30),
                   onChanged: (value) {
                     setState(() {
-                      selection = value;
+                      date = value;
+                    });
+                  },
+
+                ),
+                CardSettingsText(
+                  icon: Icon(Icons.format_list_numbered),
+                  label: 'Jar Qty',
+                  hintText: 'Enter Jar Quantity',
+                  key: _jarKey,
+                  onChanged: (value) {
+                    setState(() {
+                      jarQty = value;
                     });
                   },
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Prefered Date',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                DropdownButton(
-                  value: selection,
-                  hint: Text(
-                    "Choose",
-                    style: TextStyle(
-                      color: activeColor.withOpacity(0.5),
-                      fontSize: 17,
-                    ),
-                  ),
-                  dropdownColor: Color(0xff010A43),
-                  iconEnabledColor: activeColor,
-                  style: TextStyle(
-                    color: activeColor,
-                    fontSize: 17,
-                  ),
-                  items: listItems.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selection = value;
-                    });
+
+
+
+
+
+
+                CardSettingsButton(
+                  onPressed: () async {
+                    if(_formKey.currentState.validate()){
+
+                    print(date);
+                    print(jarQty);
+                    print(customerSelected);
+                    print(productSelected);
+                    print(date.day);
+                    print(date.month);
+                    print(date.year);
+
+                    String newDate = "${date.day}/${date.month}/${date.year}";
+
+
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      var id = prefs.getString("vendorId");
+                      print(id);
+
+                      if(id!=null){
+
+                        String apiURL =
+                            "http://192.168.29.79:4000/api/v1/vendor/order";
+                        var response = await http.post(Uri.parse(apiURL),
+                            headers: <String, String>{
+                              'Content-Type': 'application/json; charset=UTF-8',
+                            },
+                            body:jsonEncode( <String, dynamic>{
+                              "vendor":id,
+                              "jarQty":jarQty,
+                              "preferredDate":newDate,
+                              "product":productSelected,
+                              "customer":customerSelected
+                            }));
+                        var body = response.body;
+
+                        var decodedJson = jsonDecode(body);
+
+                        print(body);
+                        print(decodedJson);
+
+                        if(decodedJson["success"]!=null && decodedJson["success"]==true){
+                          Navigator.pushReplacement(
+                              context, MaterialPageRoute(builder: (context) => OrderDashboard()));
+                        }
+
+                      }
+
+
+                    }
+
                   },
+                  label: 'SAVE',
+                  backgroundColor: Color(0xFF80D8FF),
                 ),
+                CardSettingsButton(
+                  label: 'Cancel',
+                  isDestructive: true,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  bottomSpacing: 4.0,
+                )
+
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Prefered Time',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                DropdownButton(
-                  value: selection,
-                  hint: Text(
-                    "Choose",
-                    style: TextStyle(
-                      color: activeColor.withOpacity(0.5),
-                      fontSize: 17,
-                    ),
-                  ),
-                  dropdownColor: Color(0xff010A43),
-                  iconEnabledColor: activeColor,
-                  style: TextStyle(
-                    color: activeColor,
-                    fontSize: 17,
-                  ),
-                  items: listItems.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selection = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Jar Qty.',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                DropdownButton(
-                  value: selection,
-                  hint: Text(
-                    "Choose",
-                    style: TextStyle(
-                      color: activeColor.withOpacity(0.5),
-                      fontSize: 17,
-                    ),
-                  ),
-                  dropdownColor: Color(0xff010A43),
-                  iconEnabledColor: activeColor,
-                  style: TextStyle(
-                    color: activeColor,
-                    fontSize: 17,
-                  ),
-                  items: listItems.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selection = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            InkWell(
-              onTap: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.share,
-                    color: Colors.blue,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text('Share on Whatsapp'),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RaisedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                            new MaterialPageRoute(builder: (context) {
-                          return OrderAddedSuccessfullyPage();
-                        }));
-                      },
-                      child: Text('Submit'),
-                      color: Colors.blue,
-                    ),
-                    SizedBox(
-                      width: 50,
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cancel'),
-                      color: Colors.red,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+
           ],
         ),
       ),

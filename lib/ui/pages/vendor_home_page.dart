@@ -5,72 +5,12 @@ import 'package:waterkard/ui/pages/missing_jars_pages/tracking_jars.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
-const TopCardList = [
-  {
-    "color":Colors.blueAccent,
-    "title":"Orders",
-    "desc":"Total Orders: 50",
-    "page":"1",
-    "misc":"Pending Orders: 10",
-  },
-  {
-    "color":Colors.cyan,
-    "title":"Customers",
-    "desc":"Total Customers: 60",
-    "page":"2",
-    "misc":"Customers Not In A Group: 2",
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-  },
-  {
-    "color":Colors.pinkAccent,
-    "title":"Missing Jars",
-    "desc": "Missing Jars: 5",
-    "page":"3",
-    "misc":"Date: 27/05/2021",
 
-  },
-  {
-    "color":Colors.deepPurple,
-    "title":"Drivers",
-    "desc":"Total Drivers: 10",
-    "page":"4",
-    "misc":"Drivers Out For Delivery: 2",
-
-  }
-];
-
-final DriverList = [
-  {
-    "color":Colors.pink[100],
-    "title":"Number: 9711345582",
-    "image":"https://unsplash.com/photos/c_GmwfHBDzk/download?force=true&w=640",
-    "jars":"Loaded Jars: 4",
-    "name":"Driver 1",
-  },
-  {
-    "color":Colors.indigo[100],
-    "title":"Number: 9711345582",
-    "image":"https://unsplash.com/photos/_jOsfORtjew/download?force=true&w=640",
-    "jars":"Loaded Jars: 10",
-    "name":"Driver 2",
-  },
-  {
-    "color":Colors.cyan[100],
-    "title":"Number: 9711345582",
-    "image":"https://unsplash.com/photos/c_GmwfHBDzk/download?force=true&w=640",
-    "jars":"Loaded Jars: 12",
-    "name":"Driver 3",
-
-  },
-  {
-    "color":Colors.red[100],
-    "title":"Number: 9711345582",
-    "image":"https://unsplash.com/photos/_jOsfORtjew/download?force=true&w=640",
-    "jars":"Loaded Jars: 14",
-    "name":"Driver 4",
-
-  }
-];
 
 const nameTextStyle = TextStyle(
     color: Colors.white,
@@ -95,7 +35,7 @@ const titleTextStyle = TextStyle(
 final subTitleTextStyle = TextStyle(
     color: Colors.grey[800],
     fontWeight: FontWeight.w800,
-    fontSize: 20
+    fontSize: 15
 );
 final ratingTextStyle = TextStyle(
     color: Colors.grey[800],
@@ -127,12 +67,124 @@ class VendorHomePage extends StatefulWidget {
 
 class _VendorHomePageState extends State<VendorHomePage> {
   String uid;
+  String vendorName;
+
+  List<dynamic> topCardList = [
+  {
+  "color":Colors.blueAccent,
+  "title":"Orders",
+  "desc":"Total Orders: 50",
+  "page":"1",
+  "misc":"Pending Orders: 0",
+  },
+  {
+  "color":Colors.cyan,
+  "title":"Customers",
+  "desc":"Total Customers: 60",
+  "page":"2",
+  "misc":"Customers Not In A Group: 0",
+
+  },
+  {
+  "color":Colors.pinkAccent,
+  "title":"Missing Jars",
+  "desc": "Missing Jars: 5",
+  "page":"3",
+  "misc":"Date: 25/06/2021",
+
+  },
+  {
+  "color":Colors.deepPurple,
+  "title":"Drivers",
+  "desc":"Total Drivers: 10",
+  "page":"4",
+  "misc":"Drivers Out For Delivery: 0",
+
+  }
+  ];
+
+  List<dynamic> driverList = [
+    {
+      "color":Colors.pink[100],
+      "title":"Number: 9711345582",
+      "image":"https://unsplash.com/photos/c_GmwfHBDzk/download?force=true&w=640",
+      "jars":"Loaded Jars: 4",
+      "name":"Driver 1",
+    },
+    {
+      "color":Colors.indigo[100],
+      "title":"Number: 9711345582",
+      "image":"https://unsplash.com/photos/_jOsfORtjew/download?force=true&w=640",
+      "jars":"Loaded Jars: 10",
+      "name":"Driver 2",
+    },
+    {
+      "color":Colors.cyan[100],
+      "title":"Number: 9711345582",
+      "image":"https://unsplash.com/photos/c_GmwfHBDzk/download?force=true&w=640",
+      "jars":"Loaded Jars: 12",
+      "name":"Driver 3",
+
+    },
+    {
+      "color":Colors.red[100],
+      "title":"Number: 9711345582",
+      "image":"https://unsplash.com/photos/_jOsfORtjew/download?force=true&w=640",
+      "jars":"Loaded Jars: 14",
+      "name":"Driver 4",
+
+    }
+  ];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+    getHomeScreenData();
+  }
+
+  void getHomeScreenData () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/home?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["home"]!=null){
+
+        List<dynamic> receivedProducts = decodedJson["data"]["home"]["drivers"]["details"];
+        List<dynamic> formatted = [];
+        if(receivedProducts.length!=0){
+          formatted = receivedProducts.map((e) => {
+            "color": Colors.pink[100],
+            "title":"Number: ${e["mobileNumber"]}",
+            "image":"https://unsplash.com/photos/_jOsfORtjew/download?force=true&w=640",
+            "jars":"Group: ${e["group"]}",
+            "name":e["name"],
+          }).toList();
+        }
+
+        setState(() {
+          topCardList[0]["desc"] = "Total Orders: ${decodedJson["data"]["home"]["totalOrders"]}";
+          topCardList[1]["desc"] = "Total Customers: ${decodedJson["data"]["home"]["totalCustomers"]}";
+          topCardList[2]["desc"] = "Missing Jars: ${decodedJson["data"]["home"]["missingJars"]}";
+          topCardList[3]["desc"] = "Total Drivers: ${decodedJson["data"]["home"]["drivers"]["total"]}";
+          vendorName = decodedJson["data"]["home"]["vendorName"];
+          driverList = formatted;
+        });
+
+      }
+
+    }
   }
 
   @override
@@ -203,7 +255,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Hi, Customer Name",
+                          "Hi, $vendorName",
                           style: nameTextStyle,
                         ),
                         SizedBox(
@@ -246,7 +298,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                           margin: EdgeInsets.only(top: 16),
                           child: PageView(
                             controller: PageController(viewportFraction: 0.8,initialPage: 2),
-                            children:TopCardList.map((e) {
+                            children:topCardList.map((e) {
                               return GestureDetector(
                                 onTap: (){
                                   Navigator.pushReplacement(
@@ -269,7 +321,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                         child: Padding(
                           padding: EdgeInsets.only(top: 32, left: 32),
                           child: Text(
-                            "Drivers On Delivery",
+                            "Drivers",
                             style: titleTextStyle,
                           ),
                         ),
@@ -282,7 +334,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                           crossAxisSpacing: 16,
                           childAspectRatio: .95,
                           crossAxisCount: 2,
-                          children: DriverList.map((e) {
+                          children: driverList.map((e) {
                             return DriverCard(
                               color: e["color"],
                               name: e["name"],

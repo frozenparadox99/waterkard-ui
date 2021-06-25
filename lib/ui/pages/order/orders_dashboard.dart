@@ -98,7 +98,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF5F6AF8),
+      backgroundColor: Color(0xFF4267B2),
       drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Groups'),

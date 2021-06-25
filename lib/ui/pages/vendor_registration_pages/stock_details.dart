@@ -43,7 +43,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
           width: double.infinity,
           decoration: BoxDecoration(
 
-            color: Color(0xFF5F6AF8),
+            color: Color(0xFF4267B2),
           ),
           child: Column(
             children: <Widget>[

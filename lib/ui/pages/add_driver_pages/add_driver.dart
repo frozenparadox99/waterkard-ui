@@ -113,7 +113,7 @@ class _AddDriverState extends State<AddDriver> {
         width: double.infinity,
         decoration: BoxDecoration(
 
-          color: Color(0xFF5F6AF8),
+          color: Color(0xFF4267B2),
         ),
         child: Column(
           children: <Widget>[
@@ -282,7 +282,7 @@ class _AddDriverState extends State<AddDriver> {
                             height: 50,
                             margin: EdgeInsets.symmetric(horizontal: 50),
                             decoration: BoxDecoration(
-                              color: Color(0xFF5F6AF8),
+                              color: Color(0xFF4267B2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(

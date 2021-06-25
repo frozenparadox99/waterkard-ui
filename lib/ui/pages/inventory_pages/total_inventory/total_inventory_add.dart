@@ -46,7 +46,7 @@ class _TotalInventoryAddPageState extends State<TotalInventoryAddPage> {
           formatted = receivedProducts.map((e) => {
             "coolJars": e["coolJarStock"].toString(),
             "bottleJars": e["bottleJarStock"].toString(),
-            "date": "${DateTime.parse(e["dateAdded"]).day}/${DateTime.parse(e["dateAdded"]).month}/${DateTime.parse(e["dateAdded"]).year}" ,
+            "date": "${DateTime.parse(e["dateAdded"]).day+1}/${DateTime.parse(e["dateAdded"]).month}/${DateTime.parse(e["dateAdded"]).year}" ,
           }).toList();
         }
 

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         secondaryHeaderColor: Colors.white,
         cardColor: Colors.white,
         appBarTheme: AppBarTheme(
-          color: Color(0xFF5F6AF8),
+          color: Color(0xFF4267B2),
         ),
         textTheme: TextTheme(
           subtitle1: TextStyle(color: Colors.grey[800]),

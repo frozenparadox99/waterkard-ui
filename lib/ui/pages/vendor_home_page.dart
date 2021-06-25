@@ -87,7 +87,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
   },
   {
   "color":Colors.pinkAccent,
-  "title":"Missing Jars",
+  "title":"Jars",
   "desc": "Missing Jars: 5",
   "page":"3",
   "misc":"Date: 25/06/2021",
@@ -177,6 +177,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
           topCardList[0]["desc"] = "Total Orders: ${decodedJson["data"]["home"]["totalOrders"]}";
           topCardList[1]["desc"] = "Total Customers: ${decodedJson["data"]["home"]["totalCustomers"]}";
           topCardList[2]["desc"] = "Missing Jars: ${decodedJson["data"]["home"]["missingJars"]}";
+          topCardList[2]["misc"] = "Total Jars: ${decodedJson["data"]["home"]["totalJars"]}";
           topCardList[3]["desc"] = "Total Drivers: ${decodedJson["data"]["home"]["drivers"]["total"]}";
           vendorName = decodedJson["data"]["home"]["vendorName"];
           driverList = formatted;
@@ -222,7 +223,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
       body: Center(
         child: Container(
           alignment: Alignment.center,
-          color: Color(0xFF5F6AF8),
+          color: Color(0xFF4267B2),
           child: Column(
             children: [
               Container(
@@ -434,7 +435,7 @@ class SingleCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.8),fontSize: 16),),
+                        Text(desc, style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 18),),
                         SizedBox(height: 8,),
                         Text(misc, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),)
                       ],

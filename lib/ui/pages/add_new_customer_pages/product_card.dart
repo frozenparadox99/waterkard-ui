@@ -225,7 +225,7 @@ class _ProductCardState extends State<ProductCard> {
                           },
 
                           label: 'SAVE',
-                          backgroundColor: Color(0xFF80D8FF),
+                          backgroundColor: Color(0xFF4267B2),
                         ),
 
                         CardSettingsButton(

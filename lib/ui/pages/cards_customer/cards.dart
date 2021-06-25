@@ -10,48 +10,9 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-var items = [
-  {
-    "name": "Mr.Shivraj Patel",
-    "group": "Group-Hadapur",
-    "sold": "02",
-    "empty": "02",
-    "balance": "02",
-    "balance-payment": "02",
-  },
-  {
-    "name": "Mr.Santosh Kumar",
-    "group": "Group-Madavpur",
-    "sold": "02",
-    "empty": "02",
-    "balance": "02",
-    "balance-payment": "02",
-  },
-  {
-    "name": "Mr.Shivraj Patel",
-    "group": "Group-Hadapur",
-    "sold": "02",
-    "empty": "02",
-    "balance": "02",
-    "balancepayment": "02",
-  },
-  {
-    "name": "Mr.Santosh Kumar",
-    "group": "Group-Madavpur",
-    "sold": "02",
-    "empty": "02",
-    "balance": "02",
-    "balance-payment": "02",
-  },
-  {
-    "name": "Mr.Santosh Kumar",
-    "group": "Group-Madavpur",
-    "sold": "02",
-    "empty": "02",
-    "balance": "02",
-    "balance-payment": "02",
-  },
-];
+import 'jarAndPayment.dart';
+
+
 
 const TopCardList = [
 
@@ -156,6 +117,49 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
   String uid;
   List<Widget> _rows;
   List<Widget> _rows2;
+
+  List items = [
+    {
+      "name": "Mr.Shivraj Patel",
+      "group": "Group-Hadapur",
+      "sold": "02",
+      "empty": "02",
+      "balance": "02",
+      "balance-payment": "02",
+    },
+    // {
+    //   "name": "Mr.Santosh Kumar",
+    //   "group": "Group-Madavpur",
+    //   "sold": "02",
+    //   "empty": "02",
+    //   "balance": "02",
+    //   "balance-payment": "02",
+    // },
+    // {
+    //   "name": "Mr.Shivraj Patel",
+    //   "group": "Group-Hadapur",
+    //   "sold": "02",
+    //   "empty": "02",
+    //   "balance": "02",
+    //   "balancepayment": "02",
+    // },
+    // {
+    //   "name": "Mr.Santosh Kumar",
+    //   "group": "Group-Madavpur",
+    //   "sold": "02",
+    //   "empty": "02",
+    //   "balance": "02",
+    //   "balance-payment": "02",
+    // },
+    // {
+    //   "name": "Mr.Santosh Kumar",
+    //   "group": "Group-Madavpur",
+    //   "sold": "02",
+    //   "empty": "02",
+    //   "balance": "02",
+    //   "balance-payment": "02",
+    // },
+  ];
 
   @override
   void initState() {
@@ -372,6 +376,137 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
         ),
       );
     }).toList();
+    getCustomerData();
+  }
+
+  void getCustomerData () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/customer?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["customers"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["customers"];
+        List<dynamic> formatted = [];
+        if(receivedProducts.length!=0){
+          formatted = receivedProducts.map((e) => {
+            "name": e["name"],
+            "group": e["group"],
+            "sold": e["totalSold"].toString(),
+            "empty":e["totalEmptyCollected"].toString(),
+            "balance":e["totalBalance"].toString(),
+            "balance-payment":e["totalDeposit"].toString(),
+            "driverId":e["driver"],
+            "customerId":e["_id"]
+          }).toList();
+        }
+
+
+        setState(() {
+          items = formatted;
+          _rows = formatted.map((item) {
+            return Card(
+              key: ValueKey(item),
+              shadowColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              elevation: 10,
+              color: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                        leading: Icon(Icons.add_ic_call_outlined,
+                            color: Color(0xFF5F6AF8)),
+                        title: Text(item['name'].toString(),
+                            style: TextStyle(
+                                color: Colors.blue.withOpacity(0.6))),
+                        subtitle: Text(item['group'].toString(),
+                            style: TextStyle(
+                                color: Colors.blue.withOpacity(0.6))),
+                        trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(Icons.send_sharp),
+                              InkWell(
+                                onTap: (){
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(builder: (context) => JarAndPaymentPage(item["customerId"],item["driverId"])));
+                                },
+                                  child: Icon(Icons.add_circle_outline_sharp)),
+                              Icon(Icons.brightness_1_outlined),
+                            ])),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(15, 2, 15, 2),
+                    child: Divider(
+                      thickness: 0.8,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(15, 2, 15, 2),
+                    child: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text('Sold:'),
+                            Text(item['sold'].toString()),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text('Balance Jars:'),
+                            Text(item['balance'].toString()),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(15, 2, 15, 5),
+                    child: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text('Empty:'),
+                            Text(item['empty'].toString()),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text('Deposit:'),
+                            Text(item['balance-payment'].toString()),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList();
+        });
+
+      }
+
+    }
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -423,7 +558,7 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
       body: Center(
         child: Container(
           alignment: Alignment.center,
-          color: Color(0xFF5F6AF8),
+          color: Color(0xFF4267B2),
           child: Column(
             children: [
               Container(
@@ -456,14 +591,14 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Hi, Customer Name",
+                          "Customer Data",
                           style: nameTextStyle,
                         ),
                         SizedBox(
                           height: 8,
                         ),
                         Text(
-                          "Welcome to Waterkard",
+                          "Here you can view customers",
                           style: subTextStyle,
                         ),
                       ],
@@ -483,63 +618,63 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                       )),
                   child: CustomScrollView(
                     slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 32, left: 32),
-                          child: Text(
-                            "Current Stock",
-                            style: titleTextStyle,
-                          ),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 232,
-                          margin: EdgeInsets.only(top: 16),
-                          child: PageView(
-                            controller: PageController(viewportFraction: 0.8,initialPage: 2),
-                            children:TopCardList.map((e) {
-                              return GestureDetector(
-                                onTap: (){
-                                  Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => TrackingJars()));
-                                },
-
-                                child: SingleCard(
-                                  color: e["color"],
-                                  misc: e["misc"],
-                                  page: e["page"],
-                                  title: e["title"],
-                                  desc: e["desc"],
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-
-
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 32, left: 32),
-                          child: Text(
-                            "Customers",
-                            style: titleTextStyle,
-                          ),
-                        ),
-                      ),
+                      // SliverToBoxAdapter(
+                      //   child: Padding(
+                      //     padding: EdgeInsets.only(top: 32, left: 32),
+                      //     child: Text(
+                      //       "Current Stock",
+                      //       style: titleTextStyle,
+                      //     ),
+                      //   ),
+                      // ),
+                      // SliverToBoxAdapter(
+                      //   child: Container(
+                      //     width: MediaQuery.of(context).size.width,
+                      //     height: 232,
+                      //     margin: EdgeInsets.only(top: 16),
+                      //     child: PageView(
+                      //       controller: PageController(viewportFraction: 0.8,initialPage: 2),
+                      //       children:TopCardList.map((e) {
+                      //         return GestureDetector(
+                      //           onTap: (){
+                      //             Navigator.pushReplacement(
+                      //                 context, MaterialPageRoute(builder: (context) => TrackingJars()));
+                      //           },
+                      //
+                      //           child: SingleCard(
+                      //             color: e["color"],
+                      //             misc: e["misc"],
+                      //             page: e["page"],
+                      //             title: e["title"],
+                      //             desc: e["desc"],
+                      //           ),
+                      //         );
+                      //       }).toList(),
+                      //     ),
+                      //   ),
+                      // ),
 
 
-
-                      SliverPadding(
-                        padding: EdgeInsets.symmetric(horizontal: 20,vertical: 16),
-                        sliver: ReorderableSliverList(
-                          delegate: ReorderableSliverChildListDelegate(_rows2),
-
-                          onReorder: _onReorder2,
-                        ),
-                      ),
+                      // SliverToBoxAdapter(
+                      //   child: Padding(
+                      //     padding: EdgeInsets.only(top: 32, left: 32),
+                      //     child: Text(
+                      //       "Customers",
+                      //       style: titleTextStyle,
+                      //     ),
+                      //   ),
+                      // ),
+                      //
+                      //
+                      //
+                      // SliverPadding(
+                      //   padding: EdgeInsets.symmetric(horizontal: 20,vertical: 16),
+                      //   sliver: ReorderableSliverList(
+                      //     delegate: ReorderableSliverChildListDelegate(_rows2),
+                      //
+                      //     onReorder: _onReorder2,
+                      //   ),
+                      // ),
 
 
 

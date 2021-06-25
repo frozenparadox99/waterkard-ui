@@ -190,7 +190,7 @@ class _AddJarState extends State<AddJar> {
 
                   },
                   label: 'SAVE',
-                  backgroundColor: Color(0xFF80D8FF),
+                  backgroundColor: Color(0xFF4267B2),
                 ),
                 CardSettingsButton(
                   label: 'Cancel',

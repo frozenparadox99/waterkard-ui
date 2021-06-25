@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'daily_inventory_unload.dart';
 import 'load_jar_page.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+String truncateString(String data, int length) {
+  return (data.length >= length) ? '${data.substring(0, length)}...' : data;
+}
+
 
 class DailyInventoryLoadPage extends StatefulWidget {
   @override
@@ -9,24 +20,121 @@ class DailyInventoryLoadPage extends StatefulWidget {
 
 class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
   String currentDriverStateSelected, currentProductStateSelected;
+  List dailyInvForVendor = [];
   void initState() {
     super.initState();
     currentDriverStateSelected = "";
     currentProductStateSelected = "";
+    getTotalInventory();
+  }
+
+  void getTotalInventory () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      var now = new DateTime.now();
+      var date = "${now.day}/${now.month}/${now.year}";
+      String apiURL =
+          "http://192.168.29.79:4000/api/v1/vendor/inventory/daily?vendor=$id&date=$date";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["dailyInv"]!=null){
+        List<dynamic> receivedProducts = decodedJson["data"]["dailyInv"];
+        List<dynamic> formatted = [];
+        if(receivedProducts.length!=0){
+          formatted = receivedProducts.map((e) => {
+            "driverName":truncateString( e["driver"]["name"], 9),
+            "load18": e["load18"].toString(),
+            "load20": e["load20"].toString(),
+          }).toList();
+        }
+
+
+        setState(() {
+          dailyInvForVendor = formatted;
+        });
+
+      }
+
+    }
+  }
+
+  Row tableBuilder(driverName,load18, load20){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Text(
+          driverName,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+          ),
+        ),
+
+        Text(
+          load18,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+          ),
+        ),
+        Text(
+          load20,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+          ),
+        ),
+        Center(
+          child: IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.edit,
+              color: Colors.black,
+              size: 18,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Daily Inventory'),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.file_download,
-              color: Colors.white,
-            ),
-            onPressed: () {},
+            icon: Icon(Icons.add_circle),
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => LoadJarPage()));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: ()  {},
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              // await FirebaseAuth.instance.signOut();
+              // Navigator.pushReplacement(
+              //     context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+            },
           )
         ],
       ),
@@ -126,21 +234,14 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
                               ),
                             ),
                             Text(
-                              'Time',
+                              '18L Load',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
                               ),
                             ),
                             Text(
-                              'Load',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              'Delete',
+                              '20L Load',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
@@ -155,288 +256,52 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'AB',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LoadJarPage()),
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'CD',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'EF',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'GH',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'HI',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              'JK',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '08:30 AM',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '10',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+
+                        ...dailyInvForVendor.map((e) =>
+                            tableBuilder(e["driverName"],e["load18"],e["load20"])
+                        ).toList(),
+
+
+
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //   children: [
+                        //     Text(
+                        //       'JK',
+                        //       style: TextStyle(
+                        //         color: Colors.black,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //     Text(
+                        //       '10',
+                        //       style: TextStyle(
+                        //         color: Colors.black,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //     Center(
+                        //       child: IconButton(
+                        //         onPressed: () {},
+                        //         icon: Icon(
+                        //           Icons.delete,
+                        //           color: Colors.red,
+                        //           size: 18,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     Center(
+                        //       child: IconButton(
+                        //         onPressed: () {},
+                        //         icon: Icon(
+                        //           Icons.edit,
+                        //           color: Colors.black,
+                        //           size: 18,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),

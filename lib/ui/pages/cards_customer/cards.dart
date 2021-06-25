@@ -420,7 +420,7 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),
-              elevation: 10,
+              elevation: 2,
               color: Colors.white,
               child: Column(
                 mainAxisSize: MainAxisSize.min,

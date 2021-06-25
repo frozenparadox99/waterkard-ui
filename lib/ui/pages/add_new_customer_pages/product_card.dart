@@ -39,6 +39,7 @@ class _ProductCardState extends State<ProductCard> {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+    getAllProducts();
   }
 
   void getAllProducts () async {
@@ -109,7 +110,7 @@ class _ProductCardState extends State<ProductCard> {
                   children: <CardSettingsSection>[
                     CardSettingsSection(
                       header: CardSettingsHeader(
-                        label: 'Mr. Shivraj Patil',
+                        label: 'Add New Product',
                         labelAlign: TextAlign.center,
                       ),
                       children: <CardSettingsWidget>[

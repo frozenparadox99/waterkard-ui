@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -49,7 +50,7 @@ class _ProductCardState extends State<ProductCard> {
 
     if(widget.customerId!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/customer/products/all?customerId=${widget.customerId}";
+          "$API_BASE_URL/api/v1/vendor/customer/products/all?customerId=${widget.customerId}";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -194,7 +195,7 @@ class _ProductCardState extends State<ProductCard> {
                               if(widget.customerId!=null){
 
                                 String apiURL =
-                                    "http://192.168.29.79:4000/api/v1/vendor/customer/add-product";
+                                    "$API_BASE_URL/api/v1/vendor/customer/add-product";
                                 var response = await http.post(Uri.parse(apiURL),
                                     headers: <String, String>{
                                       'Content-Type': 'application/json; charset=UTF-8',

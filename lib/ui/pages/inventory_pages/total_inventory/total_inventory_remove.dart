@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/add_jar.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/remove_jar.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
@@ -33,7 +34,7 @@ class _TotalInventoryRemovePageState extends State<TotalInventoryRemovePage> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/inventory/total?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/inventory/total?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 

@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:waterkard/ui/widgets/Spinner.dart';
 
 TextStyle headingStyle = TextStyle(
     fontSize: 20,
@@ -18,33 +26,112 @@ LinearGradient gradientStyle = LinearGradient(
 );
 
 class TrackingJars extends StatefulWidget {
+
+  String driverId;
+  String driverName;
+  String group;
+
+  TrackingJars(this.driverId,this.driverName,this.group);
+
   @override
   _TrackingJarsState createState() => _TrackingJarsState();
 }
 
 class _TrackingJarsState extends State<TrackingJars> {
+
+  bool isLoading = false;
+  String stage1Load = "0";
+  String stage2Expected = "0";
+  String stage3Unload = "0";
+  String stage4Missing = "0";
+  bool stage2Present = false;
+  bool stage3Present = false;
+  bool stage4Present = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    getDisplayData();
+  }
+
+  void getDisplayData () async {
+    setState(() {
+      isLoading = true;
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      DateTime now = new DateTime.now();
+      String newDate = "${now.day}/${now.month}/${now.year}";
+      String apiURL =
+          "$API_BASE_URL/api/v1/vendor/inventory/daily-status?vendor=$id&date=$newDate&driver=${widget.driverId}";
+      print((apiURL));
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+
+
+      if(decodedJson["success"]!=null && decodedJson["success"] == true ){
+        setState(() {
+          stage1Load = "${decodedJson["data"]["stage1"]}";
+          if(decodedJson["data"]["stage2"]["present"]){
+            stage2Present = true;
+            stage2Expected = "${decodedJson["data"]["stage2"]["empty"]+decodedJson["data"]["stage2"]["filled"]}";
+          }
+          if(decodedJson["data"]["stage3"]["present"]){
+            stage3Present = true;
+            stage3Unload = "${decodedJson["data"]["stage3"]["empty"]+decodedJson["data"]["stage3"]["filled"]}";
+          }
+          if(decodedJson["data"]["stage4"]["present"]){
+            stage4Present = true;
+            stage4Missing = "${decodedJson["data"]["stage4"]["empty"]+decodedJson["data"]["stage4"]["filled"]}";
+          }
+          isLoading = false;
+        });
+
+      }
+
+
+
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Spinner();
+    }
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Missing Jars'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.add_circle),
-            onPressed: ()  {
-              // Navigator.pushReplacement(
-              //     context, MaterialPageRoute(builder: (context) => AddProduct()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.add_circle),
+          //   onPressed: ()  {
+          //     // Navigator.pushReplacement(
+          //     //     context, MaterialPageRoute(builder: (context) => AddProduct()));
+          //   },
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -61,8 +148,8 @@ class _TrackingJarsState extends State<TrackingJars> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Order Number 1001", style: headingStyle,),
-              Text("Driver Assigned: Driver 1", style: contentStyle.copyWith(
+              Text("Group: ${widget.group}", style: headingStyle,),
+              Text("Driver Assigned: ${widget.driverName}", style: contentStyle.copyWith(
                   color: Colors.grey,
                   fontSize: 16
               ),),
@@ -82,10 +169,10 @@ class _TrackingJarsState extends State<TrackingJars> {
                   Column(
                     children: [
                       statusWidget('shipped', "Confirmed ", true),
-                      statusWidget('onBoard2', "Loaded Jars: 30", false),
-                      statusWidget('shipped', "Delivered Jars: 15", false),
-                      statusWidget('servicesImg', "Unloaded Jars: 15", false),
-                      statusWidget('shipped', "Missing Jars: 0", false),
+                      statusWidget('onBoard2', "Loaded Jars: $stage1Load", true),
+                      statusWidget('shipped', "Expected Jars: $stage2Expected", stage2Present),
+                      statusWidget('servicesImg', "Unloaded Jars: $stage3Unload", stage3Present),
+                      statusWidget('shipped', "Missing Jars: $stage4Missing", stage4Present),
                     ],
                   )
                 ],
@@ -117,18 +204,18 @@ class _TrackingJarsState extends State<TrackingJars> {
                       ),),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-
-                      color: Color(0xFF5F6AF8),
-
-                    ),
-                    child: Text("View Order", style: contentStyle.copyWith(
-                        color: Colors.white
-                    ),),
-                  ),
+                  // Container(
+                  //   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.all(Radius.circular(10)),
+                  //
+                  //     color: Color(0xFF5F6AF8),
+                  //
+                  //   ),
+                  //   child: Text("View Order", style: contentStyle.copyWith(
+                  //       color: Colors.white
+                  //   ),),
+                  // ),
                 ],
               ),
 

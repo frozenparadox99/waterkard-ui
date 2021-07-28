@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/order/add_order.dart';
 import 'package:waterkard/ui/pages/order/filter_order.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -57,7 +58,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/order/all?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/order/all?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -110,14 +111,14 @@ class _OrderDashboardState extends State<OrderDashboard> {
                   context, MaterialPageRoute(builder: (context) => AddOrder()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {

@@ -109,10 +109,10 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                             padding: EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 30),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => DriverHomePage()));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => DriverHomePage()));
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(

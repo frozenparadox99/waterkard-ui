@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_remove.dart';
@@ -161,7 +162,7 @@ class _RemoveJarState extends State<RemoveJar> {
                       if(id!=null){
 
                         String apiURL =
-                            "http://192.168.29.79:4000/api/v1/vendor/inventory/total-remove-stock";
+                            "$API_BASE_URL/api/v1/vendor/inventory/total-remove-stock";
                         var response = await http.post(Uri.parse(apiURL),
                             headers: <String, String>{
                               'Content-Type': 'application/json; charset=UTF-8',

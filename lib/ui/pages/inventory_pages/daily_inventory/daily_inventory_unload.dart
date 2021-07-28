@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/unload_jar_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+import 'package:waterkard/ui/widgets/Spinner.dart';
 import 'daily_inventory_unload.dart';
 import 'load_jar_page.dart';
 
@@ -23,6 +25,7 @@ class DailyInventoryUnloadPage extends StatefulWidget {
 class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
   String currentDriverStateSelected, currentProductStateSelected;
   List dailyInvForVendor = [];
+  bool isLoading = false;
   void initState() {
     super.initState();
     currentDriverStateSelected = "";
@@ -31,6 +34,9 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
   }
 
   void getTotalInventory () async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
     print(id);
@@ -39,7 +45,7 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
       var now = new DateTime.now();
       var date = "${now.day}/${now.month}/${now.year}";
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/inventory/daily?vendor=$id&date=$date";
+          "$API_BASE_URL/api/v1/vendor/inventory/daily?vendor=$id&date=$date";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -61,6 +67,7 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
 
         setState(() {
           dailyInvForVendor = formatted;
+          isLoading = false;
         });
 
       }
@@ -110,6 +117,11 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(isLoading){
+      return Spinner();
+    }
+
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
@@ -122,14 +134,14 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
                   context, MaterialPageRoute(builder: (context) => UnloadJarPage()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -252,7 +264,7 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
                               ),
                             ),
                             Text(
-                              'Edit',
+                              'Information',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,

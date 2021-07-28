@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -8,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CustomerCard extends StatefulWidget {
   const CustomerCard({Key key}) : super(key: key);
@@ -38,7 +40,7 @@ class _CustomerCardState extends State<CustomerCard> {
 
 
   String name;
-  int mobileNumber;
+  String mobileNumber;
   String city="Mumbai";
   String group;
   String product;
@@ -50,6 +52,8 @@ class _CustomerCardState extends State<CustomerCard> {
   String deposit;
   String email;
   String area;
+  double latitude;
+  double longitude;
 
   @override
   void initState() {
@@ -68,7 +72,7 @@ class _CustomerCardState extends State<CustomerCard> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/group/all?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/group/all?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -141,7 +145,7 @@ class _CustomerCardState extends State<CustomerCard> {
                     });
                   },
                 ),
-                CardSettingsPhone(
+                CardSettingsText(
                   icon: Icon(Icons.phone_android),
                   hintText: 'Enter Phone Number',
                   label: 'Mobile',
@@ -281,6 +285,27 @@ class _CustomerCardState extends State<CustomerCard> {
                   },
                 ),
                 CardSettingsButton(
+                  onPressed: () async{
+                    Navigator.pushNamed(context, "/pickLocation").then((  _latlng) {
+                      print("-----------------------------------------------");
+                      print(_latlng);
+                      print(_latlng.toString().split("LatLng("));
+                      var new_str_arr = _latlng.toString().split("LatLng(")[1].split(",");
+                      print(double.parse(new_str_arr[0]));
+                      print(double.parse(new_str_arr[1].split(")")[0]));
+                      setState(() {
+                        latitude = double.parse(new_str_arr[0]);
+                        longitude = double.parse(new_str_arr[1].split(")")[0]);
+                      });
+
+                    });
+                  },
+                  label: 'Pick Address Location',
+                  backgroundColor: Colors.blueAccent,
+                  textColor: Colors.white,
+                  bottomSpacing: 4.0,
+                ),
+                CardSettingsButton(
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
                       print(name);
@@ -299,7 +324,7 @@ class _CustomerCardState extends State<CustomerCard> {
 
                       var newAddress = {
                         "type":"Point",
-                        "coordinates":[12.9716,77.5946]
+                        "coordinates":[latitude,longitude]
                       };
 
                       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -309,7 +334,7 @@ class _CustomerCardState extends State<CustomerCard> {
                       if(id!=null){
 
                         String apiURL =
-                            "http://192.168.29.79:4000/api/v1/vendor/customer";
+                            "$API_BASE_URL/api/v1/vendor/customer";
                         var response = await http.post(Uri.parse(apiURL),
                             headers: <String, String>{
                               'Content-Type': 'application/json; charset=UTF-8',
@@ -317,7 +342,7 @@ class _CustomerCardState extends State<CustomerCard> {
                             body:jsonEncode( <String, dynamic>{
                               "typeOfCustomer":"Regular",
                               "name":name,
-                              "mobileNumber":"+91${mobileNumber.toString()}",
+                              "mobileNumber":"+91$mobileNumber",
                               "address":newAddress,
                               "city":city,
                               "pincode":pincode,
@@ -350,6 +375,7 @@ class _CustomerCardState extends State<CustomerCard> {
 
                   },
                   label: 'SAVE',
+                  textColor: Colors.white,
                   backgroundColor: Color(0xFF4267B2),
                 ),
                 CardSettingsButton(

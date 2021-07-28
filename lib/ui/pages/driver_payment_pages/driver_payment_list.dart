@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/driver_payment_pages/add_driver_payment.dart';
 import 'package:waterkard/ui/pages/driver_payment_pages/driver_previous_payments.dart';
 
@@ -7,6 +8,27 @@ import 'package:waterkard/ui/pages/driver_payment_pages/driver_previous_payments
 
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/Spinner.dart';
+
+class TransactionModel {
+  String name;
+
+  int given;
+
+  int received;
+
+  int today;
+
+
+
+  TransactionModel(this.name, this.given,
+      this.received,this.today);
+}
 
 
 class DriverPaymentList extends StatefulWidget {
@@ -21,27 +43,90 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
   String uid;
 
   String currentStateSelected;
+  bool isLoading = false;
+
+  List<TransactionModel> allDriversForVendor = [];
 
   void initState() {
     // TODO: implement initState
     super.initState();
     uid = FirebaseAuth.instance.currentUser.uid;
+
+    getAllDriverData();
   }
+
+  void getAllDriverData () async {
+    setState(() {
+      isLoading = true;
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+
+    if(id!=null){
+      String apiURL =
+          "$API_BASE_URL/api/v1/vendor/driver/payments?vendor=$id";
+      var response = await http.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["payments"]!=null){
+        List<dynamic> receivedCustomers = decodedJson["data"]["payments"];
+        List<dynamic> formatted = receivedCustomers.map((e) => {
+          "name":e["name"],
+          "received":e["received"],
+          "given":e["given"],
+          "today":e["today"],
+        }).toList();
+
+
+
+        setState(() {
+          allDriversForVendor = formatted.map((item) => TransactionModel(
+              item['name'],
+              item['given'],
+              item['received'],
+              item['today']
+          ))
+              .toList();
+          isLoading = false;
+        });
+
+      }
+
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Spinner();
+    }
     return  Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Payment'),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
+            icon: Icon(Icons.add_circle),
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => AddDriverPayment()));
+            },
           ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -56,7 +141,7 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
         width: double.infinity,
         decoration: BoxDecoration(
 
-          color: Color(0xFF5F6AF8),
+          color: Color(0xFF4267B2),
         ),
         child: Column(
           children: <Widget>[
@@ -100,177 +185,11 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
                           ),
                           child: Column(
                             children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.symmetric(vertical: 14.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Column(
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        CircleAvatar(
-                                          backgroundColor: Color(0xFFD9D9D9),
-                                          backgroundImage: AssetImage("assets/profile_user.jpg"),
-                                          radius: 28.0,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Driver 1',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              height: 1.5,
-                                            ),
-                                            children: <TextSpan>[
-                                              TextSpan(
-                                                text: '\nCustomers: 40',
-                                                style: TextStyle(
-                                                  color: Colors.black45,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: 80,),
-                                        IconButton(
-                                          icon: const Icon(Icons.add_circle),
-                                          tooltip: 'Add',
-                                          onPressed: () {
-                                            Navigator.pushReplacement(
-                                                context, MaterialPageRoute(builder: (context) => AddDriverPayment()));
-                                          },
-                                        ),
 
-                                        IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          tooltip: 'Edit',
-                                          onPressed: () {
-                                            Navigator.pushReplacement(
-                                                context, MaterialPageRoute(builder: (context) => DriverPreviousPayments()));
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 8.0,
-                                    ),
-                                    Divider(
-                                      color: Colors.grey[200],
-                                      height: 3,
-                                      thickness: 1,
-                                    ),
-                                    SizedBox(
-                                      height: 8.0,
-                                    ),
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: <Widget>[
-                                          _iconBuilder("Today's\nCollection", '500'),
-                                          _iconBuilder("Received\nCollection", '1000'),
-                                          _iconBuilder("Balance\nCollection", '200'),
-                                          _iconBuilder("Customer\nBalance", '900'),
 
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-
-                              Container(
-                                padding: EdgeInsets.symmetric(vertical: 14.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Column(
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        CircleAvatar(
-                                          backgroundColor: Color(0xFFD9D9D9),
-                                          backgroundImage: AssetImage("assets/profile_user.jpg"),
-                                          radius: 28.0,
-                                        ),
-                                        SizedBox(width: 10,),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Driver 2',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              height: 1.5,
-                                            ),
-                                            children: <TextSpan>[
-                                              TextSpan(
-                                                text: '\nCustomers: 50',
-                                                style: TextStyle(
-                                                  color: Colors.black45,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: 80,),
-                                        IconButton(
-                                          icon: const Icon(Icons.add_circle),
-                                          tooltip: 'Add',
-                                          onPressed: () {
-                                            Navigator.pushReplacement(
-                                                context, MaterialPageRoute(builder: (context) => AddDriverPayment()));
-                                          },
-                                        ),
-
-                                        IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          tooltip: 'Edit',
-                                          onPressed: () {
-                                            Navigator.pushReplacement(
-                                                context, MaterialPageRoute(builder: (context) => DriverPreviousPayments()));
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 8.0,
-                                    ),
-                                    Divider(
-                                      color: Colors.grey[200],
-                                      height: 3,
-                                      thickness: 1,
-                                    ),
-                                    SizedBox(
-                                      height: 8.0,
-                                    ),
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: <Widget>[
-                                          _iconBuilder("Today's\nCollection", '500'),
-                                          _iconBuilder("Received\nCollection", '1000'),
-                                          _iconBuilder("Balance\nCollection", '200'),
-                                          _iconBuilder("Customer\nBalance", '900'),
-
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
+                              ...allDriversForVendor.map((e) =>
+                                  _paymentBuilder(e.name,e.today,e.received,e.given)
+                              ).toList(),
 
 
 
@@ -299,6 +218,70 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
             ))
           ],
         ),
+      ),
+    );
+  }
+
+
+  Container _paymentBuilder(driverName,today,received,given){
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 14.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              CircleAvatar(
+                backgroundColor: Color(0xFFD9D9D9),
+                backgroundImage: AssetImage("assets/profile_user.jpg"),
+                radius: 28.0,
+              ),
+              SizedBox(width: 10,),
+              RichText(
+                text: TextSpan(
+                  text: '$driverName',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                  ),
+
+                ),
+              ),
+
+
+            ],
+          ),
+          SizedBox(
+            height: 8.0,
+          ),
+          Divider(
+            color: Colors.grey[200],
+            height: 3,
+            thickness: 1,
+          ),
+          SizedBox(
+            height: 8.0,
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                _iconBuilder("Today's\nCollection", '$today'),
+                _iconBuilder("Received\nCollection", '$received'),
+                _iconBuilder("Given\nCollection", '$given'),
+                _iconBuilder("Balance\nCollection", '${received - given}'),
+
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

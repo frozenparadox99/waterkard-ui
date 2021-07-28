@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/add_group.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/edit_group.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+import 'package:waterkard/ui/widgets/Spinner.dart';
 
 import '../vendor_login_page.dart';
 import 'package:http/http.dart' as http;
@@ -104,6 +106,7 @@ class _ListGroupsState extends State<ListGroups> {
 
   String uid;
   List<TransactionModel> allGroupsForVendor = [];
+  bool isLoading = false;
 
 
   void initState() {
@@ -114,13 +117,16 @@ class _ListGroupsState extends State<ListGroups> {
   }
 
   void getAllGroups () async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
     print(id);
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/group/all?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/group/all?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -153,6 +159,7 @@ class _ListGroupsState extends State<ListGroups> {
             item['date'],
           ))
               .toList();
+          isLoading = false;
         });
 
       }
@@ -161,6 +168,9 @@ class _ListGroupsState extends State<ListGroups> {
   }
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Spinner();
+    }
     return Scaffold(
       backgroundColor: Color(0xFF4267B2),
       drawer: Sidebar(),
@@ -174,14 +184,14 @@ class _ListGroupsState extends State<ListGroups> {
                   context, MaterialPageRoute(builder: (context) => AddGroup()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -338,27 +348,27 @@ class _ListGroupsState extends State<ListGroups> {
               ),
             ),
 
-            Padding(
-              padding:
-              EdgeInsets.only(left: 24, top: 32, bottom: 16, right: 24),
-              child: Text(
-                'Edit Groups',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: kBlackColor,
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding:
+            //   EdgeInsets.only(left: 24, top: 32, bottom: 16, right: 24),
+            //   child: Text(
+            //     'Edit Groups',
+            //     style: TextStyle(
+            //       fontSize: 16,
+            //       fontWeight: FontWeight.w700,
+            //       color: kBlackColor,
+            //     ),
+            //   ),
+            // ),
 
             // GroupCard("Group 1",200),
             // GroupCard("Group 2",100),
             // GroupCard("Group 3",400),
             // GroupCard("Group 4",150),
 
-            ...allGroupsForVendor.map((e) =>
-                GroupCard(e.name, e.usersInGroup)
-            ).toList(),
+            // ...allGroupsForVendor.map((e) =>
+            //     GroupCard(e.name, e.usersInGroup)
+            // ).toList(),
 
 
 

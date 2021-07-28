@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -61,7 +62,7 @@ class _AddOrderState extends State<AddOrder> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/customer?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/customer?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -87,7 +88,7 @@ class _AddOrderState extends State<AddOrder> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/customer/products/all?customerId=$id";
+          "$API_BASE_URL/api/v1/vendor/customer/products/all?customerId=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -234,7 +235,7 @@ class _AddOrderState extends State<AddOrder> {
                       if(id!=null){
 
                         String apiURL =
-                            "http://192.168.29.79:4000/api/v1/vendor/order";
+                            "$API_BASE_URL/api/v1/vendor/order";
                         var response = await http.post(Uri.parse(apiURL),
                             headers: <String, String>{
                               'Content-Type': 'application/json; charset=UTF-8',

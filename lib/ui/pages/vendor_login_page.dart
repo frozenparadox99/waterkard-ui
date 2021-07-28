@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/pages/vendor_otp_page.dart';
 import 'package:http/http.dart' as http;
@@ -82,8 +83,9 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
                     color: Colors.blue,
                     onPressed: () async {
                       print(_controller.text);
+                      print(API_BASE_URL);
                       String apiURL =
-                          "http://192.168.29.79:4000/api/v1/vendor?mobileNumber=%2B91${_controller.text}";
+                          "$API_BASE_URL/api/v1/vendor?mobileNumber=%2B91${_controller.text}";
                       var response = await http.get(Uri.parse(apiURL));
                       var body = response.body;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -56,7 +57,7 @@ class _AddDriverState extends State<AddDriver> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/group/all?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/group/all?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -251,7 +252,7 @@ class _AddDriverState extends State<AddDriver> {
                             print(id);
                             if(id!=null){
                               String apiURL =
-                                  "http://192.168.29.79:4000/api/v1/vendor/driver";
+                                  "$API_BASE_URL/api/v1/vendor/driver";
                               var response = await http.post(Uri.parse(apiURL),
                                   headers: <String, String>{
                                     'Content-Type': 'application/json; charset=UTF-8',

@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/customer_card.dart';
+import 'package:waterkard/ui/pages/driver_list.dart';
+import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/missing_jars_pages/tracking_jars.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -9,6 +12,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:waterkard/ui/widgets/Spinner.dart';
 
 
 
@@ -58,6 +63,8 @@ const courseStyle = TextStyle(
     fontSize: 20
 );
 
+
+
 class VendorHomePage extends StatefulWidget {
   const VendorHomePage({Key key}) : super(key: key);
 
@@ -68,6 +75,8 @@ class VendorHomePage extends StatefulWidget {
 class _VendorHomePageState extends State<VendorHomePage> {
   String uid;
   String vendorName;
+
+  bool isLoading = false;
 
   List<dynamic> topCardList = [
   {
@@ -145,13 +154,18 @@ class _VendorHomePageState extends State<VendorHomePage> {
   }
 
   void getHomeScreenData () async {
+
+    setState(() {
+      isLoading = true;
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
     print(id);
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/home?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/home?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -168,7 +182,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
             "color": Colors.pink[100],
             "title":"Number: ${e["mobileNumber"]}",
             "image":"https://unsplash.com/photos/_jOsfORtjew/download?force=true&w=640",
-            "jars":"Group: ${e["group"]}",
+            "jars":"Group: ${truncateString(e["group"], 8)}",
             "name":e["name"],
           }).toList();
         }
@@ -181,6 +195,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
           topCardList[3]["desc"] = "Total Drivers: ${decodedJson["data"]["home"]["drivers"]["total"]}";
           vendorName = decodedJson["data"]["home"]["vendorName"];
           driverList = formatted;
+          isLoading = false;
         });
 
       }
@@ -190,6 +205,12 @@ class _VendorHomePageState extends State<VendorHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(isLoading){
+      return Spinner();
+    }
+
+
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
@@ -201,14 +222,6 @@ class _VendorHomePageState extends State<VendorHomePage> {
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => CustomerCard()));
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
           ),
           IconButton(
             icon: Icon(Icons.logout),
@@ -303,7 +316,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                               return GestureDetector(
                                 onTap: (){
                                   Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => TrackingJars()));
+                                      context, MaterialPageRoute(builder: (context) => ListAllDrivers()));
                                 },
 
                                 child: SingleCard(
@@ -357,6 +370,8 @@ class _VendorHomePageState extends State<VendorHomePage> {
     );
   }
 }
+
+
 
 class SingleCard extends StatelessWidget {
   final Color color;
@@ -516,7 +531,7 @@ class DriverCard extends StatelessWidget {
                         width: 2,
                       ),
                       Text(
-                        jars,
+                         jars,
                         style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                       ),
                     ],

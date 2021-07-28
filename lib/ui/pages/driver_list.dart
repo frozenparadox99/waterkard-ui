@@ -4,29 +4,28 @@ import 'package:waterkard/api/constants.dart';
 // import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/add_driver.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/edit_driver.dart';
+import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:waterkard/ui/widgets/Spinner.dart';
-import 'package:waterkard/ui/widgets/list_tile.dart';
 
-import '../vendor_login_page.dart';
+import 'missing_jars_pages/tracking_jars.dart';
+
 
 final Color activeColor = Color(0xffFF2E63);
 final Color inactiveColor = Color(0xff6C73AE);
 
-class AllDrivers extends StatefulWidget {
+class ListAllDrivers extends StatefulWidget {
   @override
-  _AllDriversState createState() => _AllDriversState();
+  _ListAllDriversState createState() => _ListAllDriversState();
 }
 
-class _AllDriversState extends State<AllDrivers> {
+class _ListAllDriversState extends State<ListAllDrivers> {
   String selection;
   String uid;
-  bool isLoading = false;
   List<Transaction> allDriversForVendor = [];
 
   void initState() {
@@ -37,9 +36,6 @@ class _AllDriversState extends State<AllDrivers> {
   }
 
   void getAllDrivers () async {
-    setState(() {
-      isLoading = true;
-    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
     print(id);
@@ -63,20 +59,21 @@ class _AllDriversState extends State<AllDrivers> {
           "groupName": e["group"]["name"],
           "phoneNumber": e["mobileNumber"],
           "passWord":e["password"],
+          "id":e["_id"]
         }).toList();
 
 
 
         setState(() {
           allDriversForVendor = formatted.map((item) => Transaction(
-            image:item['image'],
-            name:item['name'],
-            groupName:item['groupName'],
-            isEdit:item['isEdit'],
-            phoneNumber:item['phoneNumber'],
-            passWord:item['passWord']
+              image:item['image'],
+              name:item['name'],
+              groupName:item['groupName'],
+              isEdit:item['isEdit'],
+              phoneNumber:item['phoneNumber'],
+              passWord:item['passWord'],
+              driverId:item['id']
           )).toList();
-          isLoading = false;
         });
 
       }
@@ -86,11 +83,8 @@ class _AllDriversState extends State<AllDrivers> {
 
   @override
   Widget build(BuildContext context) {
-    if(isLoading){
-      return Spinner();
-    }
     return Scaffold(
-        drawer: Sidebar(),
+      drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Cards'),
         actions: [
@@ -242,13 +236,14 @@ class _AllDriversState extends State<AllDrivers> {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemBuilder: (ctx, i) => NewTransactionTile(
+                            itemBuilder: (ctx, i) => TransactionTile(
                               groupName: allDriversForVendor[i].groupName,
                               imageUrl: allDriversForVendor[i].image,
                               name: allDriversForVendor[i].name,
                               isEdit: allDriversForVendor[i].isEdit,
-                              phoneNumber: allDriversForVendor[i].phoneNumber.split("+91")[1],
+                              phoneNumber: allDriversForVendor[i].phoneNumber,
                               passWord: allDriversForVendor[i].passWord,
+                              driverId:allDriversForVendor[i].driverId,
                             ),
                             itemCount: allDriversForVendor.length,
                           ),
@@ -277,47 +272,48 @@ class Transaction {
   bool isEdit;
   String phoneNumber;
   String passWord;
+  String driverId;
 
-  Transaction({this.image, this.name, this.groupName, this.isEdit,this.phoneNumber,this.passWord});
+  Transaction({this.image, this.name, this.groupName, this.isEdit,this.phoneNumber,this.passWord,this.driverId});
 }
 
 List<Transaction> transactions = [
   Transaction(
-    image: "assets/profile_user.jpg",
-    name: "Ayush gupta",
-    groupName: "Group A",
-    isEdit: true,
-    phoneNumber: "9812346372",
-    passWord: "abcd"
+      image: "assets/profile_user.jpg",
+      name: "Ayush gupta",
+      groupName: "Group A",
+      isEdit: true,
+      phoneNumber: "9812346372",
+      passWord: "abcd"
   ),
   Transaction(
-    image: "assets/profile_user.jpg",
+      image: "assets/profile_user.jpg",
       groupName: "Group B",
-    name: "Alena Lopez",
+      name: "Alena Lopez",
       isEdit: true,
       phoneNumber: "9812346372",
       passWord: "abcd"
   ),
   Transaction(
-    image: "assets/profile_user.jpg",
+      image: "assets/profile_user.jpg",
       groupName: "Group C",
-    name: "Sheldon Cooper",
+      name: "Sheldon Cooper",
       isEdit: true,
       phoneNumber: "9812346372",
       passWord: "abcd"
   ),
   Transaction(
-    image: "assets/profile_user.jpg",
+      image: "assets/profile_user.jpg",
       groupName: "Group D",
-    name: "Virat",
+      name: "Virat",
       isEdit: true,
       phoneNumber: "9812346372",
       passWord: "abcd"
   ),
   Transaction(
-    image: "assets/profile_user.jpg",
+      image: "assets/profile_user.jpg",
       groupName: "Group E",
-    name: "Bennedict Holmes",
+      name: "Bennedict Holmes",
       isEdit: true,
       phoneNumber: "9812346372",
       passWord: "abcd"
@@ -325,118 +321,52 @@ List<Transaction> transactions = [
 ];
 
 class TransactionTile extends StatelessWidget {
-  final String imageUrl, name, groupName, passWord, phoneNumber;
+  final String imageUrl, name, groupName, passWord, phoneNumber, driverId;
   final bool isEdit;
 
-  TransactionTile({this.groupName, this.imageUrl, this.name, this.isEdit, this.passWord, this.phoneNumber});
+  TransactionTile({this.groupName, this.imageUrl, this.name, this.isEdit, this.passWord, this.phoneNumber, this.driverId});
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.all(10),
-      leading: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+    return InkWell(
+      onTap: (){
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => TrackingJars(this.driverId,this.name,this.groupName)));
+      },
+      child: ListTile(
+        contentPadding: EdgeInsets.all(10),
+        leading: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: Image.asset(imageUrl),
+          ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: Image.asset(imageUrl),
-        ),
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            name,
-            style: TextStyle(
-              color: inactiveColor,
-              fontSize: 18,
-            ),
-          ),
-          Text(
-            groupName,
-            style: TextStyle(
-              color: inactiveColor,
-              fontSize: 15,
-            ),
-          ),
-        ],
-      ),
-      subtitle: Column(
-        children: [
-
-          Status(
-            status: isEdit,
-          ),
-          Status(
-            status: !isEdit,
-          ),
-        ],
-      ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "$phoneNumber",
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black,
-            ),
-          ),
-          Text(
-            "Pass: $passWord",
-            style: TextStyle(
-              fontSize: 15,
-              color: Color(0xffFF2E63),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Status extends StatelessWidget {
-  bool status;
-  Status({this.status});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(
-        top: 5,
-        right: 75,
-      ),
-      height: 28,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: status ? Colors.teal : Colors.red,
-      ),
-      child: InkWell(
-        onTap: (){
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => EditDriver()));
-        },
-        child: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(width: 3),
-            status ?
-            Icon(
-              Icons.check_circle,
-              color: Colors.white,
-            ): Icon(
-              Icons.cancel,
-              color: Colors.white,
-            ),
-            SizedBox(width: 5),
             Text(
-              status ? "Edit" : "Delete",
+              name,
               style: TextStyle(
-                color: Colors.white,
+                color: inactiveColor,
+                fontSize: 18,
               ),
-            )
+            ),
+            Text(
+              groupName,
+              style: TextStyle(
+                color: inactiveColor,
+                fontSize: 15,
+              ),
+            ),
           ],
         ),
+
+
       ),
     );
   }
 }
+

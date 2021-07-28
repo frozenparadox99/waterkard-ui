@@ -10,6 +10,8 @@
         android:label="waterkard"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBXGnpqH4OaNDAmvpeYVlS77M3WHqWClAU"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

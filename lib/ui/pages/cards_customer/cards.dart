@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/customer_card.dart';
+import 'package:waterkard/ui/pages/map_views/show_location.dart';
 import 'package:waterkard/ui/pages/missing_jars_pages/tracking_jars.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:waterkard/ui/widgets/Spinner.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -117,6 +120,7 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
   String uid;
   List<Widget> _rows;
   List<Widget> _rows2;
+  bool isLoading = false;
 
   List items = [
     {
@@ -380,13 +384,16 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
   }
 
   void getCustomerData () async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
     print(id);
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/customer?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/customer?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -406,7 +413,10 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
             "balance":e["totalBalance"].toString(),
             "balance-payment":e["totalDeposit"].toString(),
             "driverId":e["driver"],
-            "customerId":e["_id"]
+            "customerId":e["_id"],
+            "mobileNumber":e["mobileNumber"].split("+91")[1],
+            "latitude":e["address"]["coordinates"][0],
+            "longitude":e["address"]["coordinates"][1],
           }).toList();
         }
 
@@ -439,14 +449,19 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                         trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Icon(Icons.send_sharp),
                               InkWell(
                                 onTap: (){
                                   Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => JarAndPaymentPage(item["customerId"],item["driverId"])));
+                                      context, MaterialPageRoute(builder: (context) => ShowLocationScreen(item["latitude"],item["longitude"])));
+                                },
+                                  child: Icon(Icons.send_sharp)),
+                              InkWell(
+                                onTap: (){
+                                  Navigator.pushReplacement(
+                                      context, MaterialPageRoute(builder: (context) => JarAndPaymentPage(item["customerId"],item["driverId"],item["mobileNumber"])));
                                 },
                                   child: Icon(Icons.add_circle_outline_sharp)),
-                              Icon(Icons.brightness_1_outlined),
+                              // Icon(Icons.brightness_1_outlined),
                             ])),
                   ),
                   Padding(
@@ -502,6 +517,7 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
               ),
             );
           }).toList();
+          isLoading = false;
         });
 
       }
@@ -525,6 +541,10 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(isLoading){
+      return Spinner();
+    }
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
@@ -537,14 +557,14 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                   context, MaterialPageRoute(builder: (context) => CustomerCard()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {

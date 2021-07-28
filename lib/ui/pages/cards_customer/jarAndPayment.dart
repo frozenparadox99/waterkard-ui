@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/whatsapp_service.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/cards_customer/cards.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -10,13 +12,16 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
+import 'package:waterkard/ui/widgets/shared_button.dart';
 
 
 class JarAndPaymentPage extends StatefulWidget {
   String customerId;
   String driverId;
+  String mobileNumber;
 
-  JarAndPaymentPage(this.customerId,this.driverId);
+  JarAndPaymentPage(this.customerId,this.driverId,this.mobileNumber);
 
   @override
   _JarAndPaymentPageState createState() => _JarAndPaymentPageState();
@@ -66,7 +71,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/customer?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/customer?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -207,7 +212,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                       if(id!=null){
 
                         String apiURL =
-                            "http://192.168.29.79:4000/api/v1/vendor/driver/add-transaction";
+                            "$API_BASE_URL/api/v1/vendor/driver/add-transaction";
                         var response = await http.post(Uri.parse(apiURL),
                             headers: <String, String>{
                               'Content-Type': 'application/json; charset=UTF-8',
@@ -229,8 +234,66 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                         print(decodedJson);
 
                         if(decodedJson["success"]!=null && decodedJson["success"]==true){
-                          Navigator.pushReplacement(
-                              context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.library_add_check_outlined,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                Text(
+                                  "New Order Has Been Added Successfully",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ShareButton(
+                                      onPressed: (){
+                                        WhatsAppService().toContact(
+                                          contactNumber: widget.mobileNumber,
+                                          message: "Order has been logged for $soldJarQty $productSelected jars.",
+                                        );
+                                      },
+                                      height: 40,
+                                      paddingHorizontal: 15,
+                                      textSize: 18,
+                                    ),
+                                    MaterialButton(
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                            }
+                          });
+
                         }
 
                       }
@@ -243,6 +306,10 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                   backgroundColor: Color(0xFF80D8FF),
                 ),
                 CardSettingsButton(
+                  onPressed: (){
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                  },
                   label: 'Cancel',
                   isDestructive: true,
                   backgroundColor: Colors.red,

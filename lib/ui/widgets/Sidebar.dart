@@ -41,6 +41,14 @@ class Sidebar extends StatelessWidget {
                   image: AssetImage('assets/profile-bg3.jpg')),
             ),
           ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text('Home'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => VendorHomePage()));
+            },
+          ),
           ExpansionTile(
             leading: Icon(Icons.bar_chart),
             title: Text('Inventory'),
@@ -99,14 +107,14 @@ class Sidebar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => OrderDashboard()));
             },
           ),
-          ListTile(
-            leading: Icon(Icons.shop),
-            title: Text('My Products'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AllProducts()));
-            },
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.shop),
+          //   title: Text('My Products'),
+          //   onTap: () {
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => AllProducts()));
+          //   },
+          // ),
           ExpansionTile(
             leading: Icon(Icons.payment),
             title: Text('Payments'),
@@ -133,32 +141,32 @@ class Sidebar extends StatelessWidget {
               ),
             ],
           ),
-          ExpansionTile(
-            leading: Icon(Icons.store),
-            title: Text('My Shop'),
-
-            children: [
-              // ignore: deprecated_member_use
-
-              ListTile(
-
-                title: Text('Deposits'),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DepositeList()));
-                },
-              ),
-              // ignore: deprecated_member_use
-              ListTile(
-
-                title: Text('Dispensers'),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DispenserList()));
-                },
-              ),
-            ],
-          ),
+          // ExpansionTile(
+          //   leading: Icon(Icons.store),
+          //   title: Text('My Shop'),
+          //
+          //   children: [
+          //     // ignore: deprecated_member_use
+          //
+          //     ListTile(
+          //
+          //       title: Text('Deposits'),
+          //       onTap: () {
+          //         Navigator.push(context,
+          //             MaterialPageRoute(builder: (context) => DepositeList()));
+          //       },
+          //     ),
+          //     // ignore: deprecated_member_use
+          //     ListTile(
+          //
+          //       title: Text('Dispensers'),
+          //       onTap: () {
+          //         Navigator.push(context,
+          //             MaterialPageRoute(builder: (context) => DispenserList()));
+          //       },
+          //     ),
+          //   ],
+          // ),
           Divider(),
           ListTile(
             leading: Icon(Icons.inventory),
@@ -168,11 +176,11 @@ class Sidebar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => SelectInvoice()));
             },
           ),
-          ListTile(
-            leading: Icon(Icons.description),
-            title: Text('Statements'),
-            onTap: () => null,
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.description),
+          //   title: Text('Statements'),
+          //   onTap: () => null,
+          // ),
           Divider(),
           ListTile(
             title: Text('How to use'),

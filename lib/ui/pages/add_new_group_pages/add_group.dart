@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
 
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -163,7 +164,7 @@ class _AddGroupState extends State<AddGroup> {
                             print(id);
                             if(id!=null){
                               String apiURL =
-                                  "http://192.168.29.79:4000/api/v1/vendor/group";
+                                  "$API_BASE_URL/api/v1/vendor/group";
                               var response = await http.post(Uri.parse(apiURL),
                                   headers: <String, String>{
                                     'Content-Type': 'application/json; charset=UTF-8',

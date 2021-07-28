@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -70,7 +71,7 @@ class _UnloadJarPageState extends State<UnloadJarPage> {
 
     if(id!=null){
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/driver/all?vendor=$id";
+          "$API_BASE_URL/api/v1/vendor/driver/all?vendor=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -104,7 +105,7 @@ class _UnloadJarPageState extends State<UnloadJarPage> {
       var date = "${now.day}/${now.month}/${now.year}";
 
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/inventory/get-expected-unload?vendor=$id&date=$date&driver=$driverSelected";
+          "$API_BASE_URL/api/v1/vendor/inventory/get-expected-unload?vendor=$id&date=$date&driver=$driverSelected";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -281,7 +282,7 @@ class _UnloadJarPageState extends State<UnloadJarPage> {
                       if(id!=null){
 
                         String apiURL =
-                            "http://192.168.29.79:4000/api/v1/vendor/inventory/daily-unload";
+                            "$API_BASE_URL/api/v1/vendor/inventory/daily-unload";
                         var response = await http.post(Uri.parse(apiURL),
                             headers: <String, String>{
                               'Content-Type': 'application/json; charset=UTF-8',

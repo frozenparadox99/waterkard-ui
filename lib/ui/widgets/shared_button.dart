@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+
+
+class ShareButton extends StatelessWidget{
+
+  final VoidCallback onPressed;
+  final double width;
+  final double height;
+  final double paddingHorizontal;
+  final double paddingVertical;
+  final Color color;
+  final double textSize;
+
+  ShareButton({
+    @required this.onPressed,
+    this.width,
+    this.height,
+    this.paddingHorizontal,
+    this.paddingVertical,
+    this.color,
+    this.textSize
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: paddingHorizontal?? 10, vertical: paddingVertical?? 5),
+        height: height ?? 28,
+        width: width,
+        decoration: BoxDecoration(
+            color: color?? Color(0xFF4FCE5D),
+            borderRadius: BorderRadius.circular( height!=null ? height/2 : 14)
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset("assets/wa_logo_white.png"),
+            SizedBox(width: 5,),
+            Text(
+              "Share",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: textSize??15
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+}

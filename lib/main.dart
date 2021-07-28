@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:waterkard/ui/pages/choose_user_type_page.dart';
 import 'package:waterkard/ui/pages/onboarding_page.dart';
+import 'package:waterkard/ui/pages/map_views/pick_location.dart';
+import 'package:waterkard/ui/pages/map_views/show_location.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +33,10 @@ class MyApp extends StatelessWidget {
           labelStyle: TextStyle(color: Colors.indigo[400]), // style for labels
         ),
       ),
-      home: OnboardingPage(),
+      routes: {
+        "/pickLocation" : (context) => PickLocation(),
+      },
+      home: ChooseUserTypePage(),
     );
   }
 }

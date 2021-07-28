@@ -511,8 +511,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             children:TopCardList.map((e) {
                               return GestureDetector(
                                 onTap: (){
-                                  Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => TrackingJars()));
+                                  // Navigator.pushReplacement(
+                                  //     context, MaterialPageRoute(builder: (context) => TrackingJars()));
                                 },
 
                                 child: SingleCard(

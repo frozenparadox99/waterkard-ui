@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+import 'package:waterkard/ui/widgets/Spinner.dart';
 import 'daily_inventory_unload.dart';
 import 'load_jar_page.dart';
 
@@ -21,6 +23,7 @@ class DailyInventoryLoadPage extends StatefulWidget {
 class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
   String currentDriverStateSelected, currentProductStateSelected;
   List dailyInvForVendor = [];
+  bool isLoading = false;
   void initState() {
     super.initState();
     currentDriverStateSelected = "";
@@ -29,6 +32,9 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
   }
 
   void getTotalInventory () async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
     print(id);
@@ -37,7 +43,7 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
       var now = new DateTime.now();
       var date = "${now.day}/${now.month}/${now.year}";
       String apiURL =
-          "http://192.168.29.79:4000/api/v1/vendor/inventory/daily?vendor=$id&date=$date";
+          "$API_BASE_URL/api/v1/vendor/inventory/daily?vendor=$id&date=$date";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -59,6 +65,7 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
 
         setState(() {
           dailyInvForVendor = formatted;
+          isLoading = false;
         });
 
       }
@@ -108,6 +115,9 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
 
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Spinner();
+    }
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
@@ -120,14 +130,7 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
                   context, MaterialPageRoute(builder: (context) => LoadJarPage()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -248,7 +251,7 @@ class _DailyInventoryLoadPageState extends State<DailyInventoryLoadPage> {
                               ),
                             ),
                             Text(
-                              'Edit',
+                              'Information',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,

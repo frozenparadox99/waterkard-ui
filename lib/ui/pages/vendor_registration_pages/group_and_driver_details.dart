@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/vendor_details_pages/vendor_get_details.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/pages/vendor_registration_pages/general_details.dart';
@@ -35,7 +36,7 @@ class GroupAndDriverDetailsPage extends StatefulWidget {
 
 class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
   final String apiURL =
-      "http://192.168.29.79:4000/api/v1/vendor/auth/register";
+      "$API_BASE_URL/api/v1/vendor/auth/register";
   final _formKey = GlobalKey<FormState>();
   final _createGroupController = TextEditingController();
   final _driverNameController = TextEditingController();

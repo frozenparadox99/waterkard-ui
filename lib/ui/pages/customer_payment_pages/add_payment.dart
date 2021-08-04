@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -11,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 class AddPayment extends StatefulWidget {
   const AddPayment({Key key}) : super(key: key);
@@ -31,7 +33,7 @@ class _AddPaymentState extends State<AddPayment> {
   final GlobalKey<FormState> _onlineAppKey = GlobalKey<FormState>();
   String uid;
   String paymentMethod="Cash";
-  DateTime date ;
+  DateTime date = DateTime.now();
   String customerSelected="";
   String productType = "";
   String amount = "0";
@@ -156,7 +158,7 @@ class _AddPaymentState extends State<AddPayment> {
                           icon: Icon(Icons.calendar_today),
                           label: 'Date',
                           dateFormat: DateFormat.yMMMMd(),
-                          initialValue:  DateTime(2021, 10, 10, 20, 30),
+                          initialValue:  DateTime.now(),
                           onChanged: (value) {
                             setState(() {
                               date = value;
@@ -278,6 +280,93 @@ class _AddPaymentState extends State<AddPayment> {
                                 if(decodedJson["success"]!=null && decodedJson["success"]==true){
                                   Navigator.pushReplacement(
                                       context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                }
+                                else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                                  successMessageDialogue(
+                                    context: context,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Center(
+                                          child: Icon(
+                                            Icons.error_outline,
+                                            color: Colors.blue,
+                                            size: 100,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20,),
+                                        Text(decodedJson['message'],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            MaterialButton(
+                                              child: Text(
+                                                "Back",
+                                                style: TextStyle(
+                                                    fontSize: 18
+                                                ),
+                                              ),
+                                              onPressed: (){
+                                                Navigator.pushReplacement(
+                                                    context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                              },
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ).then((value) {
+                                    if(value!=null && value=="closePage"){
+                                      Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                    }
+                                  });
+                                }
+                                else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                                  successMessageDialogue(
+                                    context: context,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Center(
+                                          child: Icon(
+                                            Icons.error_outline,
+                                            color: Colors.blue,
+                                            size: 100,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20,),
+                                        ...getErrorWidget(decodedJson["errors"]),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            MaterialButton(
+                                              child: Text(
+                                                "Back",
+                                                style: TextStyle(
+                                                    fontSize: 18
+                                                ),
+                                              ),
+                                              onPressed: (){
+                                                Navigator.pushReplacement(
+                                                    context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                              },
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ).then((value) {
+                                    if(value!=null && value=="closePage"){
+                                      Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                    }
+                                  });
                                 }
 
                               }

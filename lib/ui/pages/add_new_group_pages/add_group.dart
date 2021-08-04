@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
 
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -10,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 
 class AddGroup extends StatefulWidget {
@@ -184,6 +186,93 @@ class _AddGroupState extends State<AddGroup> {
                               if(decodedJson["success"]!=null && decodedJson["success"]==true){
                                 Navigator.pushReplacement(
                                     context, MaterialPageRoute(builder: (context) => ListGroups()));
+                              }
+                              else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                                successMessageDialogue(
+                                  context: context,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.blue,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      Text(decodedJson['message'],
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          MaterialButton(
+                                            child: Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  fontSize: 18
+                                              ),
+                                            ),
+                                            onPressed: (){
+                                              Navigator.pushReplacement(
+                                                  context, MaterialPageRoute(builder: (context) => ListGroups()));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ).then((value) {
+                                  if(value!=null && value=="closePage"){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => ListGroups()));
+                                  }
+                                });
+                              }
+                              else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                                successMessageDialogue(
+                                  context: context,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.blue,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      ...getErrorWidget(decodedJson["errors"]),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          MaterialButton(
+                                            child: Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  fontSize: 18
+                                              ),
+                                            ),
+                                            onPressed: (){
+                                              Navigator.pushReplacement(
+                                                  context, MaterialPageRoute(builder: (context) => ListGroups()));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ).then((value) {
+                                  if(value!=null && value=="closePage"){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => ListGroups()));
+                                  }
+                                });
                               }
 
 

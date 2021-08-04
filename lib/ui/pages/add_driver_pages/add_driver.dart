@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -11,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 
 class AddDriver extends StatefulWidget {
@@ -273,6 +275,92 @@ class _AddDriverState extends State<AddDriver> {
                               if(decodedJson["success"]!=null && decodedJson["success"]==true){
                                 Navigator.pushReplacement(
                                     context, MaterialPageRoute(builder: (context) => AllDrivers()));
+                              } else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                                successMessageDialogue(
+                                  context: context,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.blue,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      Text(decodedJson['message'],
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          MaterialButton(
+                                            child: Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  fontSize: 18
+                                              ),
+                                            ),
+                                            onPressed: (){
+                                              Navigator.pushReplacement(
+                                                  context, MaterialPageRoute(builder: (context) => AllDrivers()));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ).then((value) {
+                                  if(value!=null && value=="closePage"){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => AllDrivers()));
+                                  }
+                                });
+                              }
+                              else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                                successMessageDialogue(
+                                  context: context,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.blue,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      ...getErrorWidget(decodedJson["errors"]),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          MaterialButton(
+                                            child: Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  fontSize: 18
+                                              ),
+                                            ),
+                                            onPressed: (){
+                                              Navigator.pushReplacement(
+                                                  context, MaterialPageRoute(builder: (context) => AllDrivers()));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ).then((value) {
+                                  if(value!=null && value=="closePage"){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => AllDrivers()));
+                                  }
+                                });
                               }
 
 

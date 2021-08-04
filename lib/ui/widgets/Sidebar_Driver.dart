@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/driver_module/card/driver_customerpage.dart';
+import 'package:waterkard/ui/pages/driver_module/card/driver_homepage.dart';
 import 'package:waterkard/ui/pages/driver_module/daily_inventory/dailyinventory_load.dart';
+import 'package:waterkard/ui/pages/driver_module/driver_payments.dart';
 import 'package:waterkard/ui/pages/driver_module/edit_profile.dart';
 import 'package:waterkard/ui/pages/driver_module/my_customer.dart';
 import 'package:waterkard/ui/pages/driver_module/order/orders_dashboard.dart';
@@ -33,68 +35,68 @@ class SidebarDriver extends StatelessWidget {
                   image: AssetImage('assets/profile-bg3.jpg')),
             ),
           ),
-          ListTile(
-            leading: Icon(
-              Icons.assessment_outlined,
-            ),
-            title: Text('Daily Inventory'),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DriverDailyInventoryLoadPage()));
-            },
-          ),
+          // ListTile(
+          //   leading: Icon(
+          //     Icons.assessment_outlined,
+          //   ),
+          //   title: Text('Daily Inventory'),
+          //   onTap: () {
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) => DriverDailyInventoryLoadPage()));
+          //   },
+          // ),
           ListTile(
             leading: Icon(
               Icons.group,
             ),
             title: Text('My Customers'),
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DriverCustomerMainPage()));
+                      builder: (context) => DriverHomePage()));
             },
           ),
           ListTile(
             leading: Icon(
               Icons.add_business_outlined,
             ),
-            title: Text('Orders'),
+            title: Text('Payments'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => OrderDashboard()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => DriversPayments()));
             },
           ),
 
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Notification'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.pause_circle_outline_outlined,
-            ),
-            title: Text('How To Use'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.forum_outlined,
-            ),
-            title: Text('Feedback'),
-            onTap: () {},
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.notifications),
+          //   title: Text('Notification'),
+          //   onTap: () {},
+          // ),
+          // ListTile(
+          //   leading: Icon(
+          //     Icons.pause_circle_outline_outlined,
+          //   ),
+          //   title: Text('How To Use'),
+          //   onTap: () {},
+          // ),
+          // ListTile(
+          //   leading: Icon(
+          //     Icons.forum_outlined,
+          //   ),
+          //   title: Text('Feedback'),
+          //   onTap: () {},
+          // ),
           Divider(),
-          ListTile(
-            leading: Icon(
-              Icons.g_translate_outlined,
-            ),
-            title: Text('Change Language'),
-            onTap: () {},
-          ),
+          // ListTile(
+          //   leading: Icon(
+          //     Icons.g_translate_outlined,
+          //   ),
+          //   title: Text('Change Language'),
+          //   onTap: () {},
+          // ),
           ListTile(
             leading: Icon(
               Icons.vpn_key_outlined,

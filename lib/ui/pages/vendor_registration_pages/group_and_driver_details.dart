@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/vendor_details_pages/vendor_get_details.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
+import 'package:waterkard/ui/pages/vendor_registration_page.dart';
 import 'package:waterkard/ui/pages/vendor_registration_pages/general_details.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 class GroupAndDriverDetailsPage extends StatefulWidget {
   final String phoneNumber;
@@ -183,6 +186,92 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                           );
                                         }
 
+                                      } else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                                        successMessageDialogue(
+                                          context: context,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Center(
+                                                child: Icon(
+                                                  Icons.error_outline,
+                                                  color: Colors.blue,
+                                                  size: 100,
+                                                ),
+                                              ),
+                                              SizedBox(height: 20,),
+                                              Text(decodedJson['message'],
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold)),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                  MaterialButton(
+                                                    child: Text(
+                                                      "Back",
+                                                      style: TextStyle(
+                                                          fontSize: 18
+                                                      ),
+                                                    ),
+                                                    onPressed: (){
+                                                      Navigator.pushReplacement(
+                                                          context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                                    },
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ).then((value) {
+                                          if(value!=null && value=="closePage"){
+                                            Navigator.pushReplacement(
+                                                context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                          }
+                                        });
+                                      }
+                                      else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                                        successMessageDialogue(
+                                          context: context,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Center(
+                                                child: Icon(
+                                                  Icons.error_outline,
+                                                  color: Colors.blue,
+                                                  size: 100,
+                                                ),
+                                              ),
+                                              SizedBox(height: 20,),
+                                              ...getErrorWidget(decodedJson["errors"]),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                  MaterialButton(
+                                                    child: Text(
+                                                      "Back",
+                                                      style: TextStyle(
+                                                          fontSize: 18
+                                                      ),
+                                                    ),
+                                                    onPressed: (){
+                                                      Navigator.pushReplacement(
+                                                          context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                                    },
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ).then((value) {
+                                          if(value!=null && value=="closePage"){
+                                            Navigator.pushReplacement(
+                                                context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                          }
+                                        });
                                       }
 
 

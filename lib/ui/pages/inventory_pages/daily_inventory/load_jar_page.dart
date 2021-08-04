@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -11,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 
 class LoadJarPage extends StatefulWidget {
@@ -43,7 +45,7 @@ class _LoadJarPageState extends State<LoadJarPage> {
 
   String bottleJarQty = "";
   String coolJarQty = "";
-  DateTime date ;
+  DateTime date = DateTime.now();
 
 
   @override
@@ -148,7 +150,7 @@ class _LoadJarPageState extends State<LoadJarPage> {
                   icon: Icon(Icons.calendar_today),
                   label: 'Date',
                   dateFormat: DateFormat.yMMMMd(),
-                  initialValue:  DateTime(2020, 10, 10, 20, 30),
+                  initialValue:  DateTime.now(),
                   onChanged: (value) {
                     setState(() {
                       date = value;
@@ -229,6 +231,92 @@ class _LoadJarPageState extends State<LoadJarPage> {
                         if(decodedJson["success"]!=null && decodedJson["success"]==true){
                           Navigator.pushReplacement(
                               context, MaterialPageRoute(builder: (context) => DailyInventoryLoadPage()));
+                        } else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                Text(decodedJson['message'],
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    MaterialButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => DailyInventoryLoadPage()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => DailyInventoryLoadPage()));
+                            }
+                          });
+                        }
+                        else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                ...getErrorWidget(decodedJson["errors"]),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    MaterialButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => DailyInventoryLoadPage()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => DailyInventoryLoadPage()));
+                            }
+                          });
                         }
 
                       }

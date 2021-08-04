@@ -3,6 +3,7 @@ import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/pages/vendor_registration_page.dart';
 import 'package:waterkard/ui/pages/driver_module/card/driver_homepage.dart';
 import 'package:waterkard/ui/pages/vendor_registration_pages/general_details.dart';
+import 'package:waterkard/ui/pages/driver_login.dart';
 
 class ChooseUserTypePage extends StatefulWidget {
   const ChooseUserTypePage({Key key}) : super(key: key);
@@ -109,10 +110,10 @@ class _ChooseUserTypePageState extends State<ChooseUserTypePage> {
                             padding: EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 30),
                             onPressed: () {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => DriverHomePage()));
+                              Navigator.pushNamed(
+                                  context,
+                                  "/driverLogin"
+                              );
                             },
                             color: Colors.blue,
                             shape: RoundedRectangleBorder(

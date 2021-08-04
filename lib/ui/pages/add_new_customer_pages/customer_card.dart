@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
+import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -10,6 +12,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 class CustomerCard extends StatefulWidget {
   const CustomerCard({Key key}) : super(key: key);
@@ -104,14 +107,14 @@ class _CustomerCardState extends State<CustomerCard> {
             icon: Icon(Icons.add_circle),
             onPressed: ()  {},
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
@@ -367,6 +370,95 @@ class _CustomerCardState extends State<CustomerCard> {
                           Navigator.pushReplacement(
                               context, MaterialPageRoute(builder: (context) => ProductCard(decodedJson["data"]["customer"]["_id"])));
                         }
+                        else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                          print("Here");
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                Text("${decodedJson['message']}. Customer with the entered mobile number already exists",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    MaterialButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => CustomerCard()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => CustomerCard()));
+                            }
+                          });
+                        }
+
+                        else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                ...getErrorWidget(decodedJson["errors"]),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    MaterialButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => CustomerCard()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => CustomerCard()));
+                            }
+                          });
+                        }
 
                       }
 
@@ -379,6 +471,10 @@ class _CustomerCardState extends State<CustomerCard> {
                   backgroundColor: Color(0xFF4267B2),
                 ),
                 CardSettingsButton(
+                  onPressed: (){
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => VendorHomePage()));
+                  },
                   label: 'Cancel',
                   isDestructive: true,
                   backgroundColor: Colors.red,

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/services/whatsapp_service.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/cards_customer/cards.dart';
@@ -51,7 +52,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
   String productSelected="";
   String soldJarQty = "";
   String emptyJarQty = "";
-  DateTime date ;
+  DateTime date = DateTime.now() ;
 
 
   @override
@@ -294,6 +295,95 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                             }
                           });
 
+                        }
+                        else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                          print("Here");
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                Text(decodedJson['message'],
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    MaterialButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                            }
+                          });
+                        }
+
+                        else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                          successMessageDialogue(
+                            context: context,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.blue,
+                                    size: 100,
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                                ...getErrorWidget(decodedJson["errors"]),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    MaterialButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ).then((value) {
+                            if(value!=null && value=="closePage"){
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                            }
+                          });
                         }
 
                       }

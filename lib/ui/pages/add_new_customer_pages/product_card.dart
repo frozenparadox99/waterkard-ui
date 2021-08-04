@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/services/misc_services.dart';
+import 'package:waterkard/ui/pages/cards_customer/cards.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -8,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 class ProductCard extends StatefulWidget {
   final String customerId;
@@ -77,18 +80,18 @@ class _ProductCardState extends State<ProductCard> {
         appBar: AppBar(
           title: Text('Cards'),
           actions: [
-            IconButton(
-              icon: Icon(Icons.add_circle),
-              onPressed: ()  {},
-            ),
-            IconButton(
-              icon: Icon(Icons.filter_alt),
-              onPressed: ()  {},
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: ()  {},
-            ),
+            // IconButton(
+            //   icon: Icon(Icons.add_circle),
+            //   onPressed: ()  {},
+            // ),
+            // IconButton(
+            //   icon: Icon(Icons.filter_alt),
+            //   onPressed: ()  {},
+            // ),
+            // IconButton(
+            //   icon: Icon(Icons.search),
+            //   onPressed: ()  {},
+            // ),
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () async {
@@ -218,6 +221,94 @@ class _ProductCardState extends State<ProductCard> {
 
 
                                 getAllProducts();
+                               if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                                successMessageDialogue(
+                                  context: context,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.blue,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      Text(decodedJson['message'],
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          MaterialButton(
+                                            child: Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  fontSize: 18
+                                              ),
+                                            ),
+                                            onPressed: (){
+                                              Navigator.pushReplacement(
+                                                  context, MaterialPageRoute(builder: (context) => ProductCard(widget.customerId)));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ).then((value) {
+                                  if(value!=null && value=="closePage"){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => ProductCard(widget.customerId)));
+                                  }
+                                });
+                              }
+
+                               else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                                successMessageDialogue(
+                                  context: context,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.blue,
+                                          size: 100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20,),
+                                      ...getErrorWidget(decodedJson["errors"]),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          MaterialButton(
+                                            child: Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  fontSize: 18
+                                              ),
+                                            ),
+                                            onPressed: (){
+                                              Navigator.pushReplacement(
+                                                  context, MaterialPageRoute(builder: (context) => ProductCard(widget.customerId)));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ).then((value) {
+                                  if(value!=null && value=="closePage"){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => ProductCard(widget.customerId)));
+                                  }
+                                });
+                              }
 
                               }
 
@@ -227,10 +318,15 @@ class _ProductCardState extends State<ProductCard> {
                           },
 
                           label: 'SAVE',
+                          textColor: Colors.white,
                           backgroundColor: Color(0xFF4267B2),
                         ),
 
                         CardSettingsButton(
+                          onPressed: (){
+                            Navigator.pushReplacement(
+                                context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                          },
                           label: 'CANCEL',
                           isDestructive: true,
                           backgroundColor: Colors.redAccent,

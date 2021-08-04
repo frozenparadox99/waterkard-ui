@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
+import 'package:waterkard/services/shared_prefs.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
+import 'package:waterkard/ui/pages/driver_module/driver_payments.dart';
 import 'package:waterkard/ui/pages/driver_payment_pages/driver_payment_list.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -15,14 +17,14 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
-class AddDriverPayment extends StatefulWidget {
-  const AddDriverPayment({Key key}) : super(key: key);
+class CustomerToDriverPayment extends StatefulWidget {
+  const CustomerToDriverPayment({Key key}) : super(key: key);
 
   @override
-  _AddDriverPaymentState createState() => _AddDriverPaymentState();
+  _CustomerToDriverPaymentState createState() => _CustomerToDriverPaymentState();
 }
 
-class _AddDriverPaymentState extends State<AddDriverPayment> {
+class _CustomerToDriverPaymentState extends State<CustomerToDriverPayment> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final GlobalKey<FormState> _driverKey = GlobalKey<FormState>();
@@ -32,11 +34,12 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
 
   final GlobalKey<FormState> _chequeKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _onlineAppKey = GlobalKey<FormState>();
-  String uid;
+  final GlobalKey<FormState> _productKey = GlobalKey<FormState>();
+  // String uid;
   String paymentMethod="Cash";
   DateTime date = DateTime.now();
   String driverSelected="";
-
+  String productSelected = "18L";
   String amount = "0";
   String onlineApp = "None";
   String chequeNumber = "None";
@@ -48,18 +51,16 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    uid = FirebaseAuth.instance.currentUser.uid;
-    getAllDrivers();
+    // uid = FirebaseAuth.instance.currentUser.uid;
+    getDriversCustomers();
   }
 
-  void getAllDrivers () async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.getString("vendorId");
-    print(id);
+  void getDriversCustomers () async {
 
-    if(id!=null){
+
+
       String apiURL =
-          "$API_BASE_URL/api/v1/vendor/driver/all?vendor=$id";
+          "$API_BASE_URL/api/v1/driver/customers/details?driver=${SharedPrefsService.getDriverId()}";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -67,8 +68,8 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
 
       print(body);
       print(decodedJson);
-      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["drivers"]!=null){
-        List<dynamic> receivedGroups = decodedJson["data"]["drivers"];
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["customers"]!=null){
+        List<dynamic> receivedGroups = decodedJson["data"]["customers"];
         receivedGroups.forEach((ele) {
 
           setState(() {
@@ -78,7 +79,7 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
         });
       }
 
-    }
+
   }
 
   @override
@@ -99,10 +100,10 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
             // ),
             IconButton(
               icon: Icon(Icons.logout),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+              onPressed: ()  {
+                // await FirebaseAuth.instance.signOut();
+                // Navigator.pushReplacement(
+                //     context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
               },
             )
           ],
@@ -128,9 +129,9 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                         CardSettingsListPicker(
                           icon: Icon(Icons.group),
                           key: _driverKey,
-                          label: 'Driver',
+                          label: 'Customer',
                           initialValue: 'Default',
-                          hintText: 'Select Driver',
+                          hintText: 'Select Customer',
                           options: allDriverNames,
                           values: allDriverIds,
                           onChanged: (value) async{
@@ -141,12 +142,28 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                           },
                         ),
 
+                        CardSettingsListPicker(
+                          icon: Icon(Icons.shop),
+                          key: _productKey,
+                          label: 'Product',
+                          initialValue: '18L',
+                          hintText: 'Select Product',
+                          options: ['18L','20L'],
+                          values: ['18L','20L'],
+                          onChanged: (value) async{
+
+                            setState(() {
+                              productSelected = value;
+                            });
+                          },
+                        ),
+
                         CardSettingsDatePicker(
                           key: _dateKey,
                           icon: Icon(Icons.calendar_today),
                           label: 'Date',
                           dateFormat: DateFormat.yMMMMd(),
-                          initialValue:  DateTime.now(),
+                          initialValue:  DateTime(2021, 10, 10, 20, 30),
                           onChanged: (value) {
                             setState(() {
                               date = value;
@@ -237,11 +254,9 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                               String newDate = "${date.day}/${date.month}/${date.year}";
 
 
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              var id = prefs.getString("vendorId");
-                              print(id);
 
-                              if(id!=null){
+
+
 
                                 String apiURL =
                                     "$API_BASE_URL/api/v1/vendor/driver/payment";
@@ -250,11 +265,13 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                                       'Content-Type': 'application/json; charset=UTF-8',
                                     },
                                     body:jsonEncode( <String, dynamic>{
-                                      "vendor":id,
+                                      "vendor":SharedPrefsService.getDriverVendor(),
                                       "date":newDate,
-                                      "to":"Vendor",
-                                      "from":"Driver",
-                                      "driver":driverSelected,
+                                      "product":productSelected,
+                                      "to":"Driver",
+                                      "from":"Customer",
+                                      "customer":driverSelected,
+                                      "driver":SharedPrefsService.getDriverId(),
                                       "mode":paymentMethod,
                                       "amount":amount,
                                       "chequeDetails":chequeNumber,
@@ -269,9 +286,8 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
 
                                 if(decodedJson["success"]!=null && decodedJson["success"]==true){
                                   Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => DriverPaymentList()));
-                                }
-                                else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                                      context, MaterialPageRoute(builder: (context) => DriversPayments()));
+                                } else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
                                   successMessageDialogue(
                                     context: context,
                                     child: Column(
@@ -302,7 +318,7 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                                               ),
                                               onPressed: (){
                                                 Navigator.pushReplacement(
-                                                    context, MaterialPageRoute(builder: (context) => DriverPaymentList()));
+                                                    context, MaterialPageRoute(builder: (context) => DriversPayments()));
                                               },
                                             ),
                                           ],
@@ -312,7 +328,7 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                                   ).then((value) {
                                     if(value!=null && value=="closePage"){
                                       Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) => DriverPaymentList()));
+                                          context, MaterialPageRoute(builder: (context) => DriversPayments()));
                                     }
                                   });
                                 }
@@ -344,7 +360,7 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                                               ),
                                               onPressed: (){
                                                 Navigator.pushReplacement(
-                                                    context, MaterialPageRoute(builder: (context) => DriverPaymentList()));
+                                                    context, MaterialPageRoute(builder: (context) => DriversPayments()));
                                               },
                                             ),
                                           ],
@@ -354,12 +370,12 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                                   ).then((value) {
                                     if(value!=null && value=="closePage"){
                                       Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) => DriverPaymentList()));
+                                          context, MaterialPageRoute(builder: (context) => DriversPayments()));
                                     }
                                   });
                                 }
 
-                              }
+
 
 
                             }
@@ -373,7 +389,7 @@ class _AddDriverPaymentState extends State<AddDriverPayment> {
                         CardSettingsButton(
                           onPressed: (){
                             Navigator.pushReplacement(
-                                context, MaterialPageRoute(builder: (context) => DriverPaymentList()));
+                                context, MaterialPageRoute(builder: (context) => DriversPayments()));
                           },
                           label: 'CANCEL',
                           isDestructive: true,

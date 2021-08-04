@@ -118,14 +118,14 @@ class _TotalInventoryAddPageState extends State<TotalInventoryAddPage> {
                   context, MaterialPageRoute(builder: (context) => AddJar()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {

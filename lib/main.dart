@@ -4,10 +4,15 @@ import 'package:waterkard/ui/pages/choose_user_type_page.dart';
 import 'package:waterkard/ui/pages/onboarding_page.dart';
 import 'package:waterkard/ui/pages/map_views/pick_location.dart';
 import 'package:waterkard/ui/pages/map_views/show_location.dart';
+import 'package:waterkard/services/shared_prefs.dart';
+import 'package:waterkard/ui/pages/driver_login.dart';
+import 'package:waterkard/ui/pages/driver_module/card/driver_homepage.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await SharedPrefsService.init();
   runApp(MyApp());
 }
 
@@ -35,6 +40,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         "/pickLocation" : (context) => PickLocation(),
+        "/driverLogin" : (context) => DriverLogin(),
+        "/driverHomePage" : (context) => DriverHomePage(),
       },
       home: ChooseUserTypePage(),
     );

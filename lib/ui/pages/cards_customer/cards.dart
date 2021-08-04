@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/customer_card.dart';
+import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/map_views/show_location.dart';
 import 'package:waterkard/ui/pages/missing_jars_pages/tracking_jars.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -461,6 +462,12 @@ class _CustomerCardPageState extends State<CustomerCardPage> {
                                       context, MaterialPageRoute(builder: (context) => JarAndPaymentPage(item["customerId"],item["driverId"],item["mobileNumber"])));
                                 },
                                   child: Icon(Icons.add_circle_outline_sharp)),
+                              InkWell(
+                                  onTap: (){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => ProductCard(item["customerId"])));
+                                  },
+                                  child: Icon(Icons.shop)),
                               // Icon(Icons.brightness_1_outlined),
                             ])),
                   ),

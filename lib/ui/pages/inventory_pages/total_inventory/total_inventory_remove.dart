@@ -117,14 +117,14 @@ class _TotalInventoryRemovePageState extends State<TotalInventoryRemovePage> {
                   context, MaterialPageRoute(builder: (context) => RemoveJar()));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {

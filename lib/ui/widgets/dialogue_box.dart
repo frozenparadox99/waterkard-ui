@@ -22,3 +22,16 @@ Future<String> successMessageDialogue({BuildContext context, Widget child}){
         );
       });
 }
+
+Future<String> loadingDialogue({BuildContext context, Widget child}) {
+  return showDialog(context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Material(
+          type: MaterialType.transparency,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      });
+}

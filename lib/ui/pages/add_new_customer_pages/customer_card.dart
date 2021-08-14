@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
+import 'package:waterkard/ui/pages/map_views/pick_location.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -13,6 +14,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
+import 'package:geocoder/geocoder.dart';
 
 class CustomerCard extends StatefulWidget {
   const CustomerCard({Key key}) : super(key: key);
@@ -174,6 +176,7 @@ class _CustomerCardState extends State<CustomerCard> {
                   },
                 ),
                 CardSettingsText(
+                  maxLength: 200,
                   icon: Icon(Icons.location_on),
                   label: 'Address',
                   hintText: 'Enter Customer Address',
@@ -289,7 +292,24 @@ class _CustomerCardState extends State<CustomerCard> {
                 ),
                 CardSettingsButton(
                   onPressed: () async{
-                    Navigator.pushNamed(context, "/pickLocation").then((  _latlng) {
+                    var first;
+                    if(address!=null){
+                      var addresses = await Geocoder.local.findAddressesFromQuery(address);
+                       first = addresses.first;
+                      print("${first.featureName} : ${first.coordinates}");
+                    }
+
+                    double latToSend = 24.4;
+                    double longToSend = 77.6;
+
+
+                    if(first != null){
+                      latToSend = first.coordinates!=null?first.coordinates.latitude:24.4;
+                      longToSend = first.coordinates!=null?first.coordinates.longitude:77.6;
+                    }
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                        PickLocation( latToSend,longToSend))).then((  _latlng) {
                       print("-----------------------------------------------");
                       print(_latlng);
                       print(_latlng.toString().split("LatLng("));
@@ -303,7 +323,7 @@ class _CustomerCardState extends State<CustomerCard> {
 
                     });
                   },
-                  label: 'Pick Address Location',
+                  label: latitude==null?'Pick Address Location':'[$latitude, $longitude]',
                   backgroundColor: Colors.blueAccent,
                   textColor: Colors.white,
                   bottomSpacing: 4.0,

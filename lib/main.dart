@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: {
-        "/pickLocation" : (context) => PickLocation(),
+        // "/pickLocation" : (context) => PickLocation(),
         "/driverLogin" : (context) => DriverLogin(),
         "/driverHomePage" : (context) => DriverHomePage(),
       },

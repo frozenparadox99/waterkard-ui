@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PickLocation extends StatefulWidget {
-  const PickLocation({Key key}) : super(key: key);
+  double longi;
+  double lati;
+   PickLocation(this.lati, this.longi);
 
   @override
   _PickLocationState createState() => _PickLocationState();
@@ -10,8 +12,8 @@ class PickLocation extends StatefulWidget {
 
 class _PickLocationState extends State<PickLocation> {
 
-  double _lat = 24.4;
-  double _lng = 77.6;
+  // double _lat = 24.4;
+  // double _lng = 77.6;
 
   Set<Marker> _markers = {};
 
@@ -43,8 +45,8 @@ class _PickLocationState extends State<PickLocation> {
         onMapCreated: _onMapCreated,
         markers: _markers,
         initialCameraPosition: CameraPosition(
-            target: LatLng(_lat, _lng),
-            zoom: 5
+            target: LatLng(widget.lati, widget.longi),
+            zoom: 18
         ),
         onTap: (latlng){
           print(latlng);

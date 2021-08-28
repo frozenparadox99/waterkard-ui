@@ -1,41 +1,70 @@
 {
   "project_info": {
-    "project_number": "550933708506",
-    "project_id": "waterkard-d313f",
-    "storage_bucket": "waterkard-d313f.appspot.com"
+    "project_number": "578606003088",
+    "project_id": "new-waterkard",
+    "storage_bucket": "new-waterkard.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:550933708506:android:57180137a9af0fa5992fe3",
+        "mobilesdk_app_id": "1:578606003088:android:44a274329c5161e81df915",
         "android_client_info": {
-          "package_name": "com.algrus.waterkard"
+          "package_name": "com.algrus.client.waterkard"
         }
       },
       "oauth_client": [
         {
-          "client_id": "550933708506-23622kcfdd0s38hed9kte7irr40se7v2.apps.googleusercontent.com",
+          "client_id": "578606003088-8ffsqvrqijjet8gjtq0p3hvk0emvogci.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.algrus.waterkard",
+            "package_name": "com.algrus.client.waterkard",
             "certificate_hash": "ff59736e7c3e6452cca7a0d0e19535413f2968f8"
           }
         },
         {
-          "client_id": "550933708506-umf7dbvo9p2ga8cuk372sba11nrt0frl.apps.googleusercontent.com",
+          "client_id": "578606003088-qsjlkochfoo0q4je3r7509qs8rnh5i08.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDA-7SewGG9ae5KWBu33afNzbT588UhiQQ"
+          "current_key": "AIzaSyCA9dx4HX0hBGZRuOnA0B1mU9MusTUgrtc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "550933708506-umf7dbvo9p2ga8cuk372sba11nrt0frl.apps.googleusercontent.com",
+              "client_id": "578606003088-qsjlkochfoo0q4je3r7509qs8rnh5i08.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578606003088:android:6e5f203f6e5810611df915",
+        "android_client_info": {
+          "package_name": "com.algrus.waterkard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578606003088-qsjlkochfoo0q4je3r7509qs8rnh5i08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA9dx4HX0hBGZRuOnA0B1mU9MusTUgrtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578606003088-qsjlkochfoo0q4je3r7509qs8rnh5i08.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

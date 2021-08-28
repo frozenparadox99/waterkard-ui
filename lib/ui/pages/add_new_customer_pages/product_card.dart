@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/cards_customer/cards.dart';
+import 'package:waterkard/ui/pages/cards_customer/newCustomerCards.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -325,7 +326,7 @@ class _ProductCardState extends State<ProductCard> {
                         CardSettingsButton(
                           onPressed: (){
                             Navigator.pushReplacement(
-                                context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                           },
                           label: 'CANCEL',
                           isDestructive: true,

@@ -87,7 +87,7 @@ class _DepositeListState extends State<DepositeList> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            courseWidget('Rs.500', 'Customer 1', 'img1', Color(0xffff6a65), Color(0xffff5954)),
+                            courseWidget('Rs.500', 'Customer 1 ', 'img1', Color(0xffff6a65), Color(0xffff5954)),
                             SizedBox(height: 20,),
                             courseWidget('Rs.600', 'Customer 3', 'img2', Color(0xffe9eefa), Colors.white),
                             SizedBox(height: 20,),
@@ -100,7 +100,7 @@ class _DepositeListState extends State<DepositeList> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            SizedBox(height: 50,),
+                            // SizedBox(height: 50,),
                             courseWidget('Rs.600', 'Customer 2', 'img3', Color(0xffe9eefa), Colors.white),
                             SizedBox(height: 20,),
                             courseWidget('Rs.600', 'Customer 4', 'img4', Color(0xffbdcddfa), Color(0xffcedaff)),
@@ -152,26 +152,26 @@ class _DepositeListState extends State<DepositeList> {
               height: 1,
             ),),
             SizedBox(height: 10,),
-            Row(
-              children: <Widget>[
-                Container(
-                  height: 5,
-                  width: 100,
-                  color: (bgColor == Color(0xffff5954)) ? Colors.red : Color(0xff2657ce),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 5,
-                    color: (bgColor == Color(0xffff5954)) ? Colors.white.withOpacity(0.5) : Color(0xff2657ce).withOpacity(0.5),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: 20,),
-            Status(status: true,),
-            SizedBox(height: 20,),
-            Status(status: false,),
-            SizedBox(height: 40,),
+            // Row(
+            //   children: <Widget>[
+            //     Container(
+            //       height: 5,
+            //       width: 100,
+            //       color: (bgColor == Color(0xffff5954)) ? Colors.red : Color(0xff2657ce),
+            //     ),
+            //     Expanded(
+            //       child: Container(
+            //         height: 5,
+            //         color: (bgColor == Color(0xffff5954)) ? Colors.white.withOpacity(0.5) : Color(0xff2657ce).withOpacity(0.5),
+            //       ),
+            //     )
+            //   ],
+            // ),
+            // SizedBox(height: 20,),
+            // Status(status: true,),
+            // SizedBox(height: 20,),
+            // Status(status: false,),
+            // SizedBox(height: 40,),
 
           ],
         ),

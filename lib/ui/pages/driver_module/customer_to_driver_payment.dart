@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/Sidebar_Driver.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
 class CustomerToDriverPayment extends StatefulWidget {
@@ -86,9 +87,9 @@ class _CustomerToDriverPaymentState extends State<CustomerToDriverPayment> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Sidebar(),
+        drawer: SidebarDriver(),
         appBar: AppBar(
-          title: Text('My Products'),
+          title: Text('Payment'),
           actions: [
             // IconButton(
             //   icon: Icon(Icons.filter_alt),

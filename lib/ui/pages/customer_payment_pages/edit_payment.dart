@@ -122,8 +122,8 @@ class _EditPaymentState extends State<EditPayment> {
 
                         CardSettingsButton(
                           onPressed: (){
-                            Navigator.pushReplacement(
-                                context, MaterialPageRoute(builder: (context) => CustomerPreviousPayments()));
+                            // Navigator.pushReplacement(
+                            //     context, MaterialPageRoute(builder: (context) => CustomerPreviousPayments()));
                           },
                           label: 'CANCEL',
                           isDestructive: true,

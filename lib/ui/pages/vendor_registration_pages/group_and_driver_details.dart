@@ -46,6 +46,7 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
   final _driverNumberController = TextEditingController();
 
   String currentStateSelected;
+  bool firstPress = true;
   @override
   void initState() {
     // TODO: implement initState
@@ -132,7 +133,12 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                 ),
 
                                 InkWell(
+
                                   onTap: () async {
+                                    if(firstPress){
+                                      setState(() {
+                                        firstPress=false;
+                                      });
                                     if (_formKey.currentState.validate()) {
                                       print(widget.bottleJarStock);
                                       print(widget.coolJarStock);
@@ -217,7 +223,7 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                                     ),
                                                     onPressed: (){
                                                       Navigator.pushReplacement(
-                                                          context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                                          context, MaterialPageRoute(builder: (context) => GeneralDetailsPage()));
                                                     },
                                                   ),
                                                 ],
@@ -227,7 +233,7 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                         ).then((value) {
                                           if(value!=null && value=="closePage"){
                                             Navigator.pushReplacement(
-                                                context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                                context, MaterialPageRoute(builder: (context) => GeneralDetailsPage()));
                                           }
                                         });
                                       }
@@ -259,7 +265,7 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                                     ),
                                                     onPressed: (){
                                                       Navigator.pushReplacement(
-                                                          context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                                          context, MaterialPageRoute(builder: (context) => GeneralDetailsPage()));
                                                     },
                                                   ),
                                                 ],
@@ -269,13 +275,14 @@ class _GroupAndDriverDetailsPageState extends State<GroupAndDriverDetailsPage> {
                                         ).then((value) {
                                           if(value!=null && value=="closePage"){
                                             Navigator.pushReplacement(
-                                                context, MaterialPageRoute(builder: (context) => VendorRegistrationPage()));
+                                                context, MaterialPageRoute(builder: (context) => GeneralDetailsPage()));
                                           }
                                         });
                                       }
 
 
 
+                                    }
                                     }
                                   },
                                   child: Container(

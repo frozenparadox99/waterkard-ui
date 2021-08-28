@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
+import 'package:waterkard/ui/pages/cards_customer/newCustomerCards.dart';
 import 'package:waterkard/ui/pages/map_views/pick_location.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
@@ -138,7 +139,7 @@ class _CustomerCardState extends State<CustomerCard> {
                 label: 'Add New Customer',
                 labelAlign: TextAlign.center,
               ),
-              children: <CardSettingsWidget>[
+              children: [
                 CardSettingsText(
                   icon: Icon(Icons.person_add_alt_1),
                   label: 'Name',
@@ -161,6 +162,15 @@ class _CustomerCardState extends State<CustomerCard> {
                     });
                   },
                 ),
+              ],
+            ),
+            CardSettingsSection(
+              header: CardSettingsHeader(
+                label: 'Location Details',
+                labelAlign: TextAlign.center,
+              ),
+              children: [
+
                 CardSettingsListPicker(
                   icon: Icon(Icons.location_city_sharp),
                   key: _cityKey,
@@ -209,6 +219,63 @@ class _CustomerCardState extends State<CustomerCard> {
                     });
                   },
                 ),
+                CardSettingsButton(
+                  onPressed: () async{
+                    var first;
+                    if(address!=null){
+                      print("theeere");
+                      print(address);
+                      try{
+                        var addresses = await Geocoder.local.findAddressesFromQuery(address);
+                        first = addresses.first;
+                        print("${first.featureName} : ${first.coordinates}");
+                      } catch(e){
+                        print(e);
+                      }
+
+                    }
+
+                    double latToSend = 24.4;
+                    double longToSend = 77.6;
+
+                    print(address);
+                    print("here");
+
+
+                    if(first != null){
+                      latToSend = first.coordinates!=null?first.coordinates.latitude:24.4;
+                      longToSend = first.coordinates!=null?first.coordinates.longitude:77.6;
+                    }
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                        PickLocation( latToSend,longToSend))).then((  _latlng) {
+                      print("-----------------------------------------------");
+                      print(_latlng);
+                      print(_latlng.toString().split("LatLng("));
+                      var new_str_arr = _latlng.toString().split("LatLng(")[1].split(",");
+                      print(double.parse(new_str_arr[0]));
+                      print(double.parse(new_str_arr[1].split(")")[0]));
+                      setState(() {
+                        latitude = double.parse(new_str_arr[0]);
+                        longitude = double.parse(new_str_arr[1].split(")")[0]);
+                      });
+
+                    });
+                  },
+                  label: latitude==null?'Pick Address Location':'[$latitude, $longitude]',
+                  backgroundColor: Colors.blueAccent,
+                  textColor: Colors.white,
+                  bottomSpacing: 10.0,
+                ),
+              ],
+            ),
+            CardSettingsSection(
+              header: CardSettingsHeader(
+                label: 'Customer Data',
+                labelAlign: TextAlign.center,
+              ),
+              children: <CardSettingsWidget>[
+
                 CardSettingsEmail(
                   icon: Icon(Icons.person),
                   key: _emailKey,
@@ -290,44 +357,7 @@ class _CustomerCardState extends State<CustomerCard> {
                     });
                   },
                 ),
-                CardSettingsButton(
-                  onPressed: () async{
-                    var first;
-                    if(address!=null){
-                      var addresses = await Geocoder.local.findAddressesFromQuery(address);
-                       first = addresses.first;
-                      print("${first.featureName} : ${first.coordinates}");
-                    }
 
-                    double latToSend = 24.4;
-                    double longToSend = 77.6;
-
-
-                    if(first != null){
-                      latToSend = first.coordinates!=null?first.coordinates.latitude:24.4;
-                      longToSend = first.coordinates!=null?first.coordinates.longitude:77.6;
-                    }
-
-                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                        PickLocation( latToSend,longToSend))).then((  _latlng) {
-                      print("-----------------------------------------------");
-                      print(_latlng);
-                      print(_latlng.toString().split("LatLng("));
-                      var new_str_arr = _latlng.toString().split("LatLng(")[1].split(",");
-                      print(double.parse(new_str_arr[0]));
-                      print(double.parse(new_str_arr[1].split(")")[0]));
-                      setState(() {
-                        latitude = double.parse(new_str_arr[0]);
-                        longitude = double.parse(new_str_arr[1].split(")")[0]);
-                      });
-
-                    });
-                  },
-                  label: latitude==null?'Pick Address Location':'[$latitude, $longitude]',
-                  backgroundColor: Colors.blueAccent,
-                  textColor: Colors.white,
-                  bottomSpacing: 4.0,
-                ),
                 CardSettingsButton(
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
@@ -465,7 +495,7 @@ class _CustomerCardState extends State<CustomerCard> {
                                       ),
                                       onPressed: (){
                                         Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => CustomerCard()));
+                                            context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                                       },
                                     ),
                                   ],
@@ -475,7 +505,7 @@ class _CustomerCardState extends State<CustomerCard> {
                           ).then((value) {
                             if(value!=null && value=="closePage"){
                               Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => CustomerCard()));
+                                  context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                             }
                           });
                         }
@@ -493,7 +523,7 @@ class _CustomerCardState extends State<CustomerCard> {
                 CardSettingsButton(
                   onPressed: (){
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => VendorHomePage()));
+                        context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                   },
                   label: 'Cancel',
                   isDestructive: true,

@@ -22,10 +22,10 @@ class TransactionModel {
 
   String deposit20;
 
-
+  String customer;
 
   TransactionModel(this.name, this.deposit18,
-      this.deposit20,);
+      this.deposit20, this.customer);
 }
 
 
@@ -73,6 +73,7 @@ class _CustomerPaymentListState extends State<CustomerPaymentList> {
         List<dynamic> receivedCustomers = decodedJson["data"]["customers"];
         List<dynamic> formatted = receivedCustomers.map((e) => {
           "name":e["name"],
+          "customer":e["_id"],
           "deposit18": e["products"].length==1?e["products"][0]["product"]=="18L"?e["products"][0]["deposit"]:0:e["products"][0]["deposit"],
           "deposit20": e["products"].length==1?e["products"][0]["product"]=="20L"?e["products"][0]["deposit"]:0:e["products"][1]["deposit"],
         }).toList();
@@ -83,7 +84,8 @@ class _CustomerPaymentListState extends State<CustomerPaymentList> {
           allCustomersForVendor = formatted.map((item) => TransactionModel(
             item['name'],
             "${item['deposit18']}",
-              "${item['deposit20']}"
+              "${item['deposit20']}",
+            item["customer"]
           ))
               .toList();
           isLoading = false;
@@ -178,7 +180,7 @@ class _CustomerPaymentListState extends State<CustomerPaymentList> {
 
 
                               ...allCustomersForVendor.map((e) =>
-                                  DepositContainer(e.name,e.deposit18,e.deposit20)
+                                  DepositContainer(e.name,e.deposit18,e.deposit20,e.customer)
                               ).toList(),
 
 
@@ -239,94 +241,101 @@ class DepositContainer extends StatelessWidget {
   String name;
   String deposit18;
   String deposit20;
+  String customer;
 
-  DepositContainer(this.name, this.deposit18,this.deposit20) ;
+  DepositContainer(this.name, this.deposit18,this.deposit20, this.customer) ;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 14.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              CircleAvatar(
-                backgroundColor: Color(0xFFD9D9D9),
-                backgroundImage: AssetImage("assets/profile_user.jpg"),
-                radius: 28.0,
-              ),
-              SizedBox(width: 10,),
-              RichText(
-                text: TextSpan(
-                  text: '$name',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.5,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: '\nAdvance 18L: Rs.$deposit18',
-                      style: TextStyle(
-                        color: Colors.black45,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '\nAdvance 20L: Rs.$deposit20',
-                      style: TextStyle(
-                        color: Colors.black45,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
+    return InkWell(
+      onTap: (){
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => CustomerPreviousPayments(customer,name)));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundColor: Color(0xFFD9D9D9),
+                  backgroundImage: AssetImage("assets/profile_user.jpg"),
+                  radius: 28.0,
                 ),
-              ),
+                SizedBox(width: 10,),
+                RichText(
+                  text: TextSpan(
+                    text: '$name',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      height: 1.5,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: '\nAdvance 18L: Rs.$deposit18',
+                        style: TextStyle(
+                          color: Colors.black45,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 15,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '\nAdvance 20L: Rs.$deposit20',
+                        style: TextStyle(
+                          color: Colors.black45,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-              // Align(
-              //   alignment: Alignment.bottomRight,
-              //   child: Icon(
-              //     Icons.arrow_forward_ios,
-              //     color: Colors.grey[400],
-              //   ),
-              // ),
-            ],
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
+                // Align(
+                //   alignment: Alignment.bottomRight,
+                //   child: Icon(
+                //     Icons.arrow_forward_ios,
+                //     color: Colors.grey[400],
+                //   ),
+                // ),
+              ],
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
 
-          // Divider(
-          //   color: Colors.grey[200],
-          //   height: 3,
-          //   thickness: 1,
-          // ),
-          // SizedBox(
-          //   height: 8.0,
-          // ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //   children: <Widget>[
-          //     _iconBuilder(Icons.add_circle, 'Add Payment'),
-          //     _iconBuilder(Icons.notifications, 'Request'),
-          //     InkWell(onTap: (){
-          //       Navigator.pushReplacement(
-          //           context, MaterialPageRoute(builder: (context) => CustomerPreviousPayments()));
-          //     }
-          //         ,child: _iconBuilder(Icons.edit, 'Edit')),
-          //     _iconBuilder(Icons.cancel, 'Delete'),
-          //
-          //   ],
-          // )
-        ],
+            // Divider(
+            //   color: Colors.grey[200],
+            //   height: 3,
+            //   thickness: 1,
+            // ),
+            // SizedBox(
+            //   height: 8.0,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: <Widget>[
+            //     _iconBuilder(Icons.add_circle, 'Add Payment'),
+            //     _iconBuilder(Icons.notifications, 'Request'),
+            //     InkWell(onTap: (){
+            //       Navigator.pushReplacement(
+            //           context, MaterialPageRoute(builder: (context) => CustomerPreviousPayments()));
+            //     }
+            //         ,child: _iconBuilder(Icons.edit, 'Edit')),
+            //     _iconBuilder(Icons.cancel, 'Delete'),
+            //
+            //   ],
+            // )
+          ],
+        ),
       ),
     );
   }

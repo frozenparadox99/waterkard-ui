@@ -50,3 +50,8 @@ List<Widget> getErrorWidget(arr) {
       ]
   ];
 }
+
+void call(String number){
+  if(number.length<10 && number.length>13) throw "Phone number invalid";
+  launch("tel://$number");
+}

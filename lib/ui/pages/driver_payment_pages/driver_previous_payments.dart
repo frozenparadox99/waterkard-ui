@@ -1,17 +1,33 @@
+import 'dart:convert';
+import 'package:http/http.dart' as httpp;
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:waterkard/ui/pages/customer_payment_pages/add_payment.dart';
-import 'package:waterkard/ui/pages/customer_payment_pages/edit_payment.dart';
-import 'package:waterkard/ui/pages/driver_payment_pages/edit_driver_payment.dart';
-import 'package:waterkard/ui/pages/my_products_pages/edit_product.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/api/constants.dart';
 
 
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+import 'package:waterkard/ui/widgets/Spinner.dart';
+
+class TransactionModel {
+  String date;
+
+  String amount;
+
+  String product;
+
+  String mode;
+
+  TransactionModel(this.date, this.amount,
+      this.product, this.mode);
+}
 
 
 class DriverPreviousPayments extends StatefulWidget {
-  const DriverPreviousPayments({Key key}) : super(key: key);
+  String driverId;
+  String name;
+  DriverPreviousPayments(this.driverId,this.name);
 
   @override
   _DriverPreviousPaymentsState createState() => _DriverPreviousPaymentsState();
@@ -19,34 +35,91 @@ class DriverPreviousPayments extends StatefulWidget {
 
 class _DriverPreviousPaymentsState extends State<DriverPreviousPayments> {
 
-  String uid;
+  // String uid;
 
   String currentStateSelected;
+  bool isLoading = false;
+  List<TransactionModel> allCustomersForVendor = [];
+
+  get http => null;
 
   void initState() {
     // TODO: implement initState
     super.initState();
-    uid = FirebaseAuth.instance.currentUser.uid;
+    // uid = FirebaseAuth.instance.currentUser.uid;
+    getAllCustomerPayments();
   }
+
+  void getAllCustomerPayments () async {
+    setState(() {
+      isLoading = true;
+    });
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // var id = prefs.getString("vendorId");
+    // print(id);
+    // print("Customer: ${widget.customer}");
+
+
+      String apiURL =
+          "$API_BASE_URL/api/v1/vendor/driver/paymentList?driver=${widget.driverId}";
+      print(apiURL);
+      var response = await httpp.get(Uri.parse(apiURL));
+      var body = response.body;
+
+      var decodedJson = jsonDecode(body);
+
+      print(body);
+      print(decodedJson);
+      if(decodedJson["success"]!=null && decodedJson["success"] == true && decodedJson["data"]!=null && decodedJson["data"]["driverPayments"]!=null){
+        List<dynamic> receivedCustomers = decodedJson["data"]["driverPayments"];
+        List<dynamic> formatted = receivedCustomers.map((e) => {
+          "date":new DateFormat("yyyy-MM-dd").parse(e["date"]),
+          "amount":e["amount"],
+          "product": e["product"],
+          "mode": e["mode"],
+        }).toList();
+
+
+
+        setState(() {
+          allCustomersForVendor = formatted.map((item) => TransactionModel(
+              DateFormat("yyyy-MM-dd").format(item['date']),
+              "${item['amount']}",
+              "${item['product']}",
+              item["mode"]
+          ))
+              .toList();
+          isLoading = false;
+        });
+
+      }
+
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Spinner();
+    }
     return  Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
         title: Text('Payment'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.filter_alt),
-            onPressed: ()  {},
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: ()  {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
+          // ),
+          // IconButton(
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
+          // ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              // await FirebaseAuth.instance.signOut();
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
             },
@@ -84,17 +157,14 @@ class _DriverPreviousPaymentsState extends State<DriverPreviousPayments> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Center(
-                                child: Text("Driver Name", style: TextStyle(color: Colors.black, fontSize: 32),),
+                                child: Text("${widget.name}", style: TextStyle(color: Colors.black, fontSize: 32),),
                               ),
-                              SizedBox(height: 10,),
-                              Center(
-                                child: Text("Customers: 50", style: TextStyle(color: Colors.black, fontSize: 18),),
-                              )
+
                             ],
                           ),
                         ),
 
-                        SizedBox(height: 30,),
+                        SizedBox(height: 10,),
                         Container(
                           decoration: BoxDecoration(
                               color: Colors.white,
@@ -102,67 +172,94 @@ class _DriverPreviousPaymentsState extends State<DriverPreviousPayments> {
                           ),
                           child: Column(
                             children: <Widget>[
-                              Card(
-                                elevation: 2.0,
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Text(
-                                          'Date',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Received Amt.',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                          ),
-                                        ),
+                              // Card(
+                              //   elevation: 2.0,
+                              //   child: Column(
+                              //     children: [
+                              //       SizedBox(
+                              //         height: 10,
+                              //       ),
+                              //       Row(
+                              //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              //         children: [
+                              //           Text(
+                              //             'Date',
+                              //             style: TextStyle(
+                              //               color: Colors.black,
+                              //               fontSize: 16,
+                              //             ),
+                              //           ),
+                              //           Text(
+                              //             'Amount',
+                              //             style: TextStyle(
+                              //               color: Colors.black,
+                              //               fontSize: 16,
+                              //             ),
+                              //           ),
+                              //
+                              //
+                              //           Text(
+                              //             'Product',
+                              //             style: TextStyle(
+                              //               color: Colors.black,
+                              //               fontSize: 16,
+                              //             ),
+                              //           ),
+                              //           Text(
+                              //             'Mode',
+                              //             style: TextStyle(
+                              //               color: Colors.black,
+                              //               fontSize: 16,
+                              //             ),
+                              //           ),
+                              //         ],
+                              //       ),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //       PaymentRow(),
+                              //
+                              //
+                              //
+                              //
+                              //
+                              //     ],
+                              //   ),
+                              // ),
 
+                              DataTable(
+                                columns: [
+                                  DataColumn(label: Text(
+                                      'Date',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                                  )),
+                                  DataColumn(label: Text(
+                                      'Amount',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                                  )),
+                                  // DataColumn(label: Text(
+                                  //     'Product',
+                                  //     style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                                  // )),
+                                  DataColumn(label: Text(
+                                      'Mode',
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                                  )),
+                                ],
+                                rows: [
+                                  ...allCustomersForVendor.map((e) =>
+                                      buildDataRow(e.date,e.amount,e.product,e.mode)
+                                  ).toList(),
 
-                                        Text(
-                                          'Edit',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Delete',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-                                    PaymentRow(),
-
-
-
-
-
-                                  ],
-                                ),
+                                ],
                               ),
 
 
@@ -197,6 +294,15 @@ class _DriverPreviousPaymentsState extends State<DriverPreviousPayments> {
         ),
       ),
     );
+  }
+
+  DataRow buildDataRow(date,amount,product,mode) {
+    return DataRow(cells: [
+      DataCell(Text('$date')),
+      DataCell(Text('$amount')),
+      // DataCell(Text('$product')),
+      DataCell(Text('$mode')),
+    ]);
   }
 
   Column _iconBuilder(icon, title) {
@@ -237,47 +343,80 @@ class PaymentRow extends StatelessWidget {
           '17-05-2021',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 12,
+            fontSize: 14,
           ),
         ),
         Text(
           'Rs. 500',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 12,
+            fontSize: 14,
           ),
         ),
 
+        // Text(
+        //   '18L',
+        //   style: TextStyle(
+        //     color: Colors.black,
+        //     fontSize: 12,
+        //   ),
+        // ),
+        // Text(
+        //   'Cash',
+        //   style: TextStyle(
+        //     color: Colors.black,
+        //     fontSize: 12,
+        //   ),
+        // ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: 25.0,),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EditDriverPayment()),
-                );
-              },
-              icon: Icon(
-                Icons.edit,
-                color: Colors.black,
-                size: 18,
-              ),
+
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     SizedBox(width: 25.0,),
+        //     IconButton(
+        //          onPressed: () {
+        //            Navigator.push(
+        //              context,
+        //              MaterialPageRoute(
+        //                  builder: (context) => EditPayment()),
+        //            );
+        //          },
+        //          icon: Icon(
+        //            Icons.edit,
+        //            color: Colors.black,
+        //            size: 18,
+        //          ),
+        //        ),
+        //   ],
+        // ),
+
+        // Center(
+        //   child: IconButton(
+        //     onPressed: () {},
+        //     icon: Icon(
+        //       Icons.delete,
+        //       color: Colors.red,
+        //       size: 18,
+        //     ),
+        //   ),
+        // ),
+        Center(
+          child:  Text(
+            '18L',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
             ),
-          ],
+          ),
         ),
 
-
         Center(
-          child: IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.delete,
-              color: Colors.red,
-              size: 18,
+          child:  Text(
+            'Cash',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
             ),
           ),
         ),

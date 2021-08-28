@@ -24,10 +24,10 @@ class TransactionModel {
 
   int today;
 
-
+  String driverId;
 
   TransactionModel(this.name, this.given,
-      this.received,this.today);
+      this.received,this.today,this.driverId);
 }
 
 
@@ -80,6 +80,7 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
           "received":e["received"],
           "given":e["given"],
           "today":e["today"],
+          "driverId":e["_id"]
         }).toList();
 
 
@@ -89,7 +90,8 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
               item['name'],
               item['given'],
               item['received'],
-              item['today']
+              item['today'],
+              item['driverId']
           ))
               .toList();
           isLoading = false;
@@ -188,7 +190,7 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
 
 
                               ...allDriversForVendor.map((e) =>
-                                  _paymentBuilder(e.name,e.today,e.received,e.given)
+                                  _paymentBuilder(e.name,e.today,e.received,e.given,e.driverId)
                               ).toList(),
 
 
@@ -223,65 +225,71 @@ class _DriverPaymentListState extends State<DriverPaymentList> {
   }
 
 
-  Container _paymentBuilder(driverName,today,received,given){
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 14.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              CircleAvatar(
-                backgroundColor: Color(0xFFD9D9D9),
-                backgroundImage: AssetImage("assets/profile_user.jpg"),
-                radius: 28.0,
-              ),
-              SizedBox(width: 10,),
-              RichText(
-                text: TextSpan(
-                  text: '$driverName',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.5,
-                  ),
-
-                ),
-              ),
-
-
-            ],
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          Divider(
-            color: Colors.grey[200],
-            height: 3,
-            thickness: 1,
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  InkWell _paymentBuilder(driverName,today,received,given,driverId){
+    return InkWell(
+      onTap: (){
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => DriverPreviousPayments(driverId, driverName)));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                _iconBuilder("Today's\nCollection", '$today'),
-                _iconBuilder("Received\nCollection", '$received'),
-                _iconBuilder("Given\nCollection", '$given'),
-                _iconBuilder("Balance\nCollection", '${received - given}'),
+                CircleAvatar(
+                  backgroundColor: Color(0xFFD9D9D9),
+                  backgroundImage: AssetImage("assets/profile_user.jpg"),
+                  radius: 28.0,
+                ),
+                SizedBox(width: 10,),
+                RichText(
+                  text: TextSpan(
+                    text: '$driverName',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      height: 1.5,
+                    ),
+
+                  ),
+                ),
+
 
               ],
             ),
-          )
-        ],
+            SizedBox(
+              height: 8.0,
+            ),
+            Divider(
+              color: Colors.grey[200],
+              height: 3,
+              thickness: 1,
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  _iconBuilder("Today's\nCollection", '$today'),
+                  _iconBuilder("Received\nCollection", '$received'),
+                  _iconBuilder("Given\nCollection", '$given'),
+                  _iconBuilder("Balance\nCollection", '${received - given}'),
+
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

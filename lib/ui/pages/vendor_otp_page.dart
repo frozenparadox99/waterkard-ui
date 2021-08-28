@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+import 'package:waterkard/ui/pages/cards_customer/newCustomerCards.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 
 class VendorOtpPage extends StatefulWidget {
@@ -39,7 +40,7 @@ class _VendorOtpPageState extends State<VendorOtpPage> {
               .then((value) async {
             if (value.user != null) {
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => VendorHomePage()));
+                  MaterialPageRoute(builder: (context) => NewCustomerCards()));
             }
           });
         },
@@ -100,7 +101,7 @@ class _VendorOtpPageState extends State<VendorOtpPage> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => VendorHomePage()));
+                              builder: (context) => NewCustomerCards()));
                     }
                   });
                 } catch (e) {

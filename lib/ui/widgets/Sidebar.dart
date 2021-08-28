@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:waterkard/ui/pages/add_driver_pages/all_drivers.dart';
 import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
 import 'package:waterkard/ui/pages/cards_customer/cards.dart';
+import 'package:waterkard/ui/pages/cards_customer/newCustomerCards.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
 import 'package:waterkard/ui/pages/deposite_pages/deposite_list.dart';
 import 'package:waterkard/ui/pages/dispenser_pages/dispenser_list.dart';
@@ -45,8 +46,8 @@ class Sidebar extends StatelessWidget {
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => VendorHomePage()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => NewCustomerCards()));
             },
           ),
           ExpansionTile(
@@ -77,10 +78,10 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.card_membership_outlined),
-            title: Text('Cards'),
+            title: Text('Statistics'),
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                  MaterialPageRoute(builder: (context) =>  VendorHomePage()));
             },
           ),
           ListTile(
@@ -167,15 +168,15 @@ class Sidebar extends StatelessWidget {
           //     ),
           //   ],
           // ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.inventory),
-            title: Text('Invoice'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SelectInvoice()));
-            },
-          ),
+          // Divider(),
+          // ListTile(
+          //   leading: Icon(Icons.inventory),
+          //   title: Text('Invoice'),
+          //   onTap: () {
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => SelectInvoice()));
+          //   },
+          // ),
           // ListTile(
           //   leading: Icon(Icons.description),
           //   title: Text('Statements'),

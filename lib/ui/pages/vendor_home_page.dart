@@ -198,6 +198,12 @@ class _VendorHomePageState extends State<VendorHomePage> {
           isLoading = false;
         });
 
+      } else {
+        await FirebaseAuth.instance.signOut();
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.remove('vendorId');
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
       }
 
     }
@@ -214,7 +220,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Stats'),
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle),

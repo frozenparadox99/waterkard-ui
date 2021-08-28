@@ -16,6 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
 import 'package:waterkard/ui/widgets/shared_button.dart';
 
+import 'newCustomerCards.dart';
+
 
 class JarAndPaymentPage extends StatefulWidget {
   String customerId;
@@ -281,7 +283,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                                       ),
                                       onPressed: (){
                                         Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                            context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                                       },
                                     ),
                                   ],
@@ -291,7 +293,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                           ).then((value) {
                             if(value!=null && value=="closePage"){
                               Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                  context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                             }
                           });
 
@@ -328,7 +330,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                                       ),
                                       onPressed: (){
                                         Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                            context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                                       },
                                     ),
                                   ],
@@ -338,7 +340,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                           ).then((value) {
                             if(value!=null && value=="closePage"){
                               Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                  context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                             }
                           });
                         }
@@ -371,7 +373,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                                       ),
                                       onPressed: (){
                                         Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                            context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                                       },
                                     ),
                                   ],
@@ -381,7 +383,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                           ).then((value) {
                             if(value!=null && value=="closePage"){
                               Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                                  context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                             }
                           });
                         }
@@ -398,7 +400,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                 CardSettingsButton(
                   onPressed: (){
                     Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => CustomerCardPage()));
+                        context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
                   },
                   label: 'Cancel',
                   isDestructive: true,

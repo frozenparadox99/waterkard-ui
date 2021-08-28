@@ -1,22 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/api_services.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/services/shared_prefs.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/customer_card.dart';
+import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/driver_module/card/driver_jar_and_payments.dart';
+import 'package:waterkard/ui/pages/map_views/show_location.dart';
 import 'package:waterkard/ui/pages/missing_jars_pages/tracking_jars.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:reorderables/reorderables.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'package:waterkard/ui/widgets/Sidebar_Driver.dart';
 import 'package:waterkard/ui/widgets/card_widgets.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
+import 'package:waterkard/ui/widgets/vendor_customer_card_widget.dart';
 import 'package:waterkard/utils.dart';
 
-import 'driver_addcustomerpage.dart';
-import 'driver_filter.dart';
+import 'jarAndPayment.dart';
+
 
 var items = [
   {
@@ -153,14 +160,14 @@ const courseStyle = TextStyle(
     fontSize: 20
 );
 
-class DriverHomePage extends StatefulWidget {
-  const DriverHomePage({Key key}) : super(key: key);
+class NewCustomerCards extends StatefulWidget {
+  const NewCustomerCards({Key key}) : super(key: key);
 
   @override
-  _DriverHomePageState createState() => _DriverHomePageState();
+  _NewCustomerCardsState createState() => _NewCustomerCardsState();
 }
 
-class _DriverHomePageState extends State<DriverHomePage> {
+class _NewCustomerCardsState extends State<NewCustomerCards> {
   String uid;
   List<Widget> _rows;
   List<Widget> _rows2;
@@ -168,6 +175,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
   bool isLoading = true;
   String driverName = "Sample";
   int activeTabIndex = 0;
+
+  int missingJars = 0;
+  int loadedJars = 0;
+  int totalJars = 0;
+  int totalSold = 0;
+  int godownStock = 0;
+  int emptyJars = 0;
+  int customerBalance = 0;
 
   @override
   void initState() {
@@ -386,8 +401,45 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   getCustomers() async{
     isLoading = true;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString("vendorId");
+    print(id);
+    if(id == null){
+      await FirebaseAuth.instance.signOut();
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.remove('vendorId');
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+    }
+    String apiURL =
+        "$API_BASE_URL/api/v1/vendor/customer?vendor=$id";
+    var response = await http.get(Uri.parse(apiURL));
+    var body = response.body;
 
-    Map map  = await ApiServices().getDriversCustomers();
+    Map map  = jsonDecode(body);
+
+    String stockApiURL =
+        "$API_BASE_URL/api/v1/vendor/stock-details?vendor=$id";
+    var stockResponse = await http.get(Uri.parse(stockApiURL));
+    var stockBody = stockResponse.body;
+
+    Map stockMap  = jsonDecode(stockBody);
+    print("-----------------------");
+    print(stockMap);
+    if(stockMap["success"]!=null && stockMap["success"] == true){
+      var metaData = stockMap["data"];
+      setState(() {
+         missingJars = metaData["missingJars"];
+         loadedJars = metaData["loadedJars"];
+         godownStock = metaData["totalJars"] - metaData["loadedJars"] - metaData["missingJars"];
+         totalSold = metaData["totalSold"];
+         emptyJars = metaData["emptyJars"];
+         customerBalance = metaData["customersBalance"];
+         totalJars = metaData["customersBalance"] + metaData["totalJars"];
+      });
+    }
+
+    // Map map  = await ApiServices().getDriversCustomers();
     customersMap = map["data"];
     if(customersMap==null){
       setState(() {
@@ -398,12 +450,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
     List list = customersMap["customers"];
     _rows2 = list.map((item) {
+      print(item);
       // return customerCard(item);
-      return NewCustomerCard(customerMap: item,);
+      return VendorCustomerCard(customerMap: item,);
     }).toList();
 
     setState(() {
-      driverName = SharedPrefsService.getDriverName();
+      // driverName = SharedPrefsService.getDriverName();
       isLoading = false;
     });
   }
@@ -428,52 +481,33 @@ class _DriverHomePageState extends State<DriverHomePage> {
     Size  size = MediaQuery.of(context).size;
 
     return Scaffold(
-      drawer: SidebarDriver(),
+      drawer: Sidebar(),
       appBar: AppBar(
-        // backgroundColor: colorBlue,
         title: Text('Home'),
         actions: [
+          IconButton(
+            icon: Icon(Icons.add_circle),
+            onPressed: ()  {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => CustomerCard()));
+            },
+          ),
           // IconButton(
-          //   icon: Icon(
-          //     Icons.add_circle_outline,
-          //     color: Colors.white,
-          //   ),
-          //   onPressed: () {
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => DriverAddCustomerCardPage()));
-          //   },
-          // ),
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.search,
-          //     color: Colors.white,
-          //   ),
-          //   onPressed: () {},
+          //   icon: Icon(Icons.filter_alt),
+          //   onPressed: ()  {},
           // ),
           // IconButton(
-          //   icon: Icon(
-          //     Icons.filter_alt,
-          //     color: Colors.white,
-          //   ),
-          //   onPressed: () {
-          //     Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) => DriverCardsFilterPage()));
-          //   },
+          //   icon: Icon(Icons.search),
+          //   onPressed: ()  {},
           // ),
-          // RotatedBox(
-          //   quarterTurns: 1,
-          //   child: IconButton(
-          //     icon: Icon(
-          //       Icons.login_outlined,
-          //       color: Colors.white,
-          //     ),
-          //     onPressed: () {},
-          //   ),
-          // ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+            },
+          )
         ],
       ),
       body: Center(
@@ -543,7 +577,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   child: body(),
                 ),
               ),
-              // bottomSheet(size),
+              bottomSheet(size,missingJars, loadedJars, totalJars, totalSold, godownStock, emptyJars, customerBalance),
               SizedBox(
                 height: 10,
               )
@@ -597,7 +631,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text("No Customers Available"),
+          Center(child: Text("No Customers Available",style: TextStyle(
+              fontSize: 18,
+              color: Colors.blue
+          ),)),
         ],
       );
     }
@@ -624,7 +661,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  Widget bottomSheet(Size size){
+  Widget bottomSheet(Size size, missingJars, loadedJars, totalJars, totalSold, godownStock, emptyJars, customerBalance){
     return Container(
       width: size.width,
       height: size.width * 0.5,
@@ -650,7 +687,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   ),
                 ),
                 Text(
-                  "200",
+                  "$totalJars",
                   style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -675,7 +712,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Loaded\nJar",
+                          "Jars in\nVehicle",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 17,
@@ -684,7 +721,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Text(
-                          "30",
+                          "$loadedJars",
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -706,7 +743,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Customer's\nBalance",
+                          "Empty",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 17,
@@ -715,7 +752,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Text(
-                          "100",
+                          "$emptyJars",
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -753,7 +790,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Text(
-                          "20",
+                          "$totalSold",
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -784,7 +821,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Text(
-                          "02",
+                          "$godownStock",
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -813,7 +850,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Empty",
+                          "Customer\nBalance",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 17,
@@ -822,7 +859,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Text(
-                          "20",
+                          "$customerBalance",
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -853,7 +890,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Text(
-                          "02",
+                          "$missingJars",
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -921,21 +958,31 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 IconButton(
                   icon: Icon(Icons.send_sharp,color: Colors.white,),
                   onPressed: (){
-                    Map address = item["address"];
-                    List coordinates = address["coordinates"];
-                    navigateTo(coordinates.first, coordinates.last);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ShowLocationScreen(item["latitude"],item["longitude"])));
+
                   },
                 ),
                 SizedBox(width: 10,),
+                InkWell(
+                    onTap: (){
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (context) => ProductCard(item["customerId"])));
+                    },
+                    child: Icon(Icons.shop)),
                 InkWell(
                   onTap: (){
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DriverJarAndPaymentPage(item["_id"], SharedPrefsService.getDriverId(), item["mobileNumber"].split("+91")[1])));
+                            builder: (context) => JarAndPaymentPage(item["customerId"],item["driverId"],item["mobileNumber"])));
                   },
                   child: Icon(Icons.add_circle_outline_sharp,color: Colors.white,),
                 ),
+
+
 
               ]),
           Row(

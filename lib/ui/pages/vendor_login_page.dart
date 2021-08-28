@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waterkard/api/constants.dart';
+import 'package:waterkard/ui/pages/cards_customer/cards.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
 import 'package:waterkard/ui/pages/vendor_otp_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'cards_customer/newCustomerCards.dart';
 
 class VendorLoginPage extends StatefulWidget {
   const VendorLoginPage({Key key}) : super(key: key);
@@ -37,7 +40,7 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
   Widget build(BuildContext context) {
     print(user);
     return user != null
-        ? VendorHomePage()
+        ? NewCustomerCards()
         : Scaffold(
             appBar: AppBar(
               title: Text('Phone Auth'),

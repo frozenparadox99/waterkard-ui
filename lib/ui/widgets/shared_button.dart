@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils.dart';
+
 
 class ShareButton extends StatelessWidget{
 
@@ -52,4 +54,38 @@ class ShareButton extends StatelessWidget{
     );
   }
 
+}
+
+class FilledButton extends StatelessWidget {
+
+  final Color color;
+  final Color textColor;
+  final String text;
+  final VoidCallback onPressed;
+
+  FilledButton({this.color, this.textColor, @required this.text, @required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: color ?? colorBlue,
+            borderRadius: BorderRadius.circular(5)
+        ),
+        child: Center(
+          child: Text(
+            text.toUpperCase(),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: textColor ?? Colors.white
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

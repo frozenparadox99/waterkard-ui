@@ -7,6 +7,7 @@ class ApiEndPoints{
 
   static String baseUrl = API_BASE_URL + "/api/v1";
   static String driver = baseUrl + "/driver";
+  static String vendor = baseUrl + "/vendor";
 
 
   static Uri driverLogin = Uri.parse(driver + "/login");
@@ -14,4 +15,6 @@ class ApiEndPoints{
   // static Uri driversCustomers = Uri.parse(driver + "/customers?driver=" + "60feb6fd0e7a61001c6b075c");
   static Uri driversPayments = Uri.parse(driver + "/payments?driver=" + SharedPrefsService.getDriverId());
 // static Uri driversPayments = Uri.parse(driver + "/payments?driver=" + "60feb6fd0e7a61001c6b075c");
+  static String transactionsByCustomer = vendor + "/transactions?";
+  static Uri updateDailyTransaction = Uri.parse(vendor + "/transactions");
 }

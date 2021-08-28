@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/Sidebar_Driver.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
 import 'package:waterkard/ui/widgets/shared_button.dart';
 
@@ -69,7 +70,7 @@ class _DriverJarAndPaymentPageState extends State<DriverJarAndPaymentPage> {
 
   void getAllCustomers () async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.getString("vendorId");
+    var id = prefs.getString("driverVendor");
     print(id);
 
     if(id!=null){
@@ -101,7 +102,7 @@ class _DriverJarAndPaymentPageState extends State<DriverJarAndPaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Sidebar(),
+      drawer: SidebarDriver(),
       appBar: AppBar(
         title: Text('Cards'),
         actions: [
@@ -212,177 +213,177 @@ class _DriverJarAndPaymentPageState extends State<DriverJarAndPaymentPage> {
 
 
 
-                        String apiURL =
-                            "$API_BASE_URL/api/v1/vendor/driver/add-transaction";
-                        var response = await http.post(Uri.parse(apiURL),
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                            },
-                            body:jsonEncode( <String, dynamic>{
-                              "vendor":SharedPrefsService.getDriverVendor(),
-                              "driver":this.widget.driverId,
-                              "date":newDate,
-                              "product":productSelected,
-                              "customer":this.widget.customerId,
-                              "soldJars":soldJarQty,
-                              "emptyCollected":emptyJarQty
-                            }));
-                        var body = response.body;
+                      String apiURL =
+                          "$API_BASE_URL/api/v1/vendor/driver/add-transaction";
+                      var response = await http.post(Uri.parse(apiURL),
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                          },
+                          body:jsonEncode( <String, dynamic>{
+                            "vendor":SharedPrefsService.getDriverVendor(),
+                            "driver":this.widget.driverId,
+                            "date":newDate,
+                            "product":productSelected,
+                            "customer":this.widget.customerId,
+                            "soldJars":soldJarQty,
+                            "emptyCollected":emptyJarQty
+                          }));
+                      var body = response.body;
 
-                        var decodedJson = jsonDecode(body);
+                      var decodedJson = jsonDecode(body);
 
-                        print(body);
-                        print(decodedJson);
+                      print(body);
+                      print(decodedJson);
 
-                        if(decodedJson["success"]!=null && decodedJson["success"]==true){
-                          successMessageDialogue(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Center(
-                                  child: Icon(
-                                    Icons.library_add_check_outlined,
-                                    color: Colors.blue,
-                                    size: 100,
-                                  ),
+                      if(decodedJson["success"]!=null && decodedJson["success"]==true){
+                        successMessageDialogue(
+                          context: context,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Icon(
+                                  Icons.library_add_check_outlined,
+                                  color: Colors.blue,
+                                  size: 100,
                                 ),
-                                SizedBox(height: 20,),
-                                Text(
-                                  "New Order Has Been Added Successfully",
-                                  textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 20,),
+                              Text(
+                                "New Order Has Been Added Successfully",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              SizedBox(height: 20,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ShareButton(
+                                    onPressed: (){
+                                      WhatsAppService().toContact(
+                                        contactNumber: widget.mobileNumber,
+                                        message: "Order has been logged for $soldJarQty $productSelected jars.",
+                                      );
+                                    },
+                                    height: 40,
+                                    paddingHorizontal: 15,
+                                    textSize: 18,
+                                  ),
+                                  MaterialButton(
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(
+                                          fontSize: 18
+                                      ),
+                                    ),
+                                    onPressed: (){
+                                      Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => DriverHomePage()));
+                                    },
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ).then((value) {
+                          if(value!=null && value=="closePage"){
+                            Navigator.pushReplacement(
+                                context, MaterialPageRoute(builder: (context) => DriverHomePage()));
+                          }
+                        });
+
+                      }
+                      else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
+                        successMessageDialogue(
+                          context: context,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Icon(
+                                  Icons.error_outline,
+                                  color: Colors.blue,
+                                  size: 100,
+                                ),
+                              ),
+                              SizedBox(height: 20,),
+                              Text(decodedJson['message'],
                                   style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                                SizedBox(height: 20,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    ShareButton(
-                                      onPressed: (){
-                                        WhatsAppService().toContact(
-                                          contactNumber: widget.mobileNumber,
-                                          message: "Order has been logged for $soldJarQty $productSelected jars.",
-                                        );
-                                      },
-                                      height: 40,
-                                      paddingHorizontal: 15,
-                                      textSize: 18,
-                                    ),
-                                    MaterialButton(
-                                      child: Text(
-                                        "Cancel",
-                                        style: TextStyle(
-                                            fontSize: 18
-                                        ),
+                                      fontWeight: FontWeight.bold)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  MaterialButton(
+                                    child: Text(
+                                      "Back",
+                                      style: TextStyle(
+                                          fontSize: 18
                                       ),
-                                      onPressed: (){
-                                        Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => DriverHomePage()));
-                                      },
                                     ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ).then((value) {
-                            if(value!=null && value=="closePage"){
-                              Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => DriverHomePage()));
-                            }
-                          });
-
-                        }
-                        else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
-                          successMessageDialogue(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Center(
-                                  child: Icon(
-                                    Icons.error_outline,
-                                    color: Colors.blue,
-                                    size: 100,
+                                    onPressed: (){
+                                      Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => DriverHomePage()));
+                                    },
                                   ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ).then((value) {
+                          if(value!=null && value=="closePage"){
+                            Navigator.pushReplacement(
+                                context, MaterialPageRoute(builder: (context) => DriverHomePage()));
+                          }
+                        });
+                      }
+                      else if (decodedJson["success"]!=null && decodedJson["success"]==false){
+                        successMessageDialogue(
+                          context: context,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Icon(
+                                  Icons.error_outline,
+                                  color: Colors.blue,
+                                  size: 100,
                                 ),
-                                SizedBox(height: 20,),
-                                Text(decodedJson['message'],
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold)),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    MaterialButton(
-                                      child: Text(
-                                        "Back",
-                                        style: TextStyle(
-                                            fontSize: 18
-                                        ),
+                              ),
+                              SizedBox(height: 20,),
+                              ...getErrorWidget(decodedJson["errors"]),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  MaterialButton(
+                                    child: Text(
+                                      "Back",
+                                      style: TextStyle(
+                                          fontSize: 18
                                       ),
-                                      onPressed: (){
-                                        Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => DriverHomePage()));
-                                      },
                                     ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ).then((value) {
-                            if(value!=null && value=="closePage"){
-                              Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => DriverHomePage()));
-                            }
-                          });
-                        }
-                        else if (decodedJson["success"]!=null && decodedJson["success"]==false){
-                          successMessageDialogue(
-                            context: context,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Center(
-                                  child: Icon(
-                                    Icons.error_outline,
-                                    color: Colors.blue,
-                                    size: 100,
+                                    onPressed: (){
+                                      Navigator.pushReplacement(
+                                          context, MaterialPageRoute(builder: (context) => DriverHomePage()));
+                                    },
                                   ),
-                                ),
-                                SizedBox(height: 20,),
-                                ...getErrorWidget(decodedJson["errors"]),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    MaterialButton(
-                                      child: Text(
-                                        "Back",
-                                        style: TextStyle(
-                                            fontSize: 18
-                                        ),
-                                      ),
-                                      onPressed: (){
-                                        Navigator.pushReplacement(
-                                            context, MaterialPageRoute(builder: (context) => DriverHomePage()));
-                                      },
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ).then((value) {
-                            if(value!=null && value=="closePage"){
-                              Navigator.pushReplacement(
-                                  context, MaterialPageRoute(builder: (context) => DriverHomePage()));
-                            }
-                          });
-                        }
+                                ],
+                              )
+                            ],
+                          ),
+                        ).then((value) {
+                          if(value!=null && value=="closePage"){
+                            Navigator.pushReplacement(
+                                context, MaterialPageRoute(builder: (context) => DriverHomePage()));
+                          }
+                        });
+                      }
 
 
 

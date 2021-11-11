@@ -6,26 +6,27 @@ import 'package:waterkard/data/models/invoice/customer.dart';
 import 'package:waterkard/data/models/invoice/invoice.dart';
 import 'package:waterkard/data/models/invoice/supplier.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
+import 'package:waterkard/ui/widgets/Sidebar_Driver.dart';
 import 'package:waterkard/ui/widgets/invoice/button_widget.dart';
 import 'package:waterkard/ui/widgets/invoice/title_widget.dart';
 
 
 
-class InvoicePdf extends StatefulWidget {
+class DriverInvoicePdf extends StatefulWidget {
   Map invMap;
 
 
 
-  InvoicePdf(this.invMap);
+  DriverInvoicePdf(this.invMap);
   @override
-  _InvoicePdfState createState() => _InvoicePdfState();
+  _DriverInvoicePdfState createState() => _DriverInvoicePdfState();
 }
 
-class _InvoicePdfState extends State<InvoicePdf> {
+class _DriverInvoicePdfState extends State<DriverInvoicePdf> {
   @override
   Widget build(BuildContext context) => Scaffold(
 
-    drawer: Sidebar(),
+    drawer: SidebarDriver(),
     appBar: AppBar(
       title: Text('Invoice'),
       actions: [
@@ -117,45 +118,45 @@ class _InvoicePdfState extends State<InvoicePdf> {
                           final dueDate = date.add(Duration(days: 7));
 
                           final invoice = Invoice(
-                            supplier: Supplier(
-                              name: "${widget.invMap["vendor"]["fullVendorName"]}",
-                              address: "${widget.invMap["vendor"]["fullBusinessName"]}",
-                              paymentInfo: "${widget.invMap["vendor"]["brandName"]}, ${widget.invMap["vendor"]["city"]}, ${widget.invMap["vendor"]["state"]}",
-                            ),
-                            customer: Customer(
-                              name: "Customer Name: ${widget.invMap["customer"]["name"]}",
-                              address: "${widget.invMap["customer"]["mobileNumber"]}",
-                            ),
-                            info: InvoiceInfo(
-                              date: date,
-                              dueDate: dueDate,
-                              description: '',
-                              number: '${DateTime.now().year}-9999',
-                            ),
-                            items: (widget.invMap["payments18"].length!=0 && widget.invMap["payments20"].length!=0)? [
+                              supplier: Supplier(
+                                name: "${widget.invMap["vendor"]["fullVendorName"]}",
+                                address: "${widget.invMap["vendor"]["fullBusinessName"]}",
+                                paymentInfo: "${widget.invMap["vendor"]["brandName"]}, ${widget.invMap["vendor"]["city"]}, ${widget.invMap["vendor"]["state"]}",
+                              ),
+                              customer: Customer(
+                                name: "Customer Name: ${widget.invMap["customer"]["name"]}",
+                                address: "${widget.invMap["customer"]["mobileNumber"]}",
+                              ),
+                              info: InvoiceInfo(
+                                date: date,
+                                dueDate: dueDate,
+                                description: '',
+                                number: '${DateTime.now().year}-9999',
+                              ),
+                              items: (widget.invMap["payments18"].length!=0 && widget.invMap["payments20"].length!=0)? [
                               ...widget.invMap["payments18"].map((e) =>
 
-                                  InvoiceItem(
-                                    description: '18L Jar',
-                                    date: DateTime.parse('${e["date"]}'),
-                                    quantity: int.parse('${e["transaction"]["soldJars"]}'),
-                                    vat: 0.1,
-                                    unitPrice: double.parse("${widget.invMap["rate18"]["rate"]}"),
-                                  )
-                              ),
+                              InvoiceItem(
+                                description: '18L Jar',
+                                date: DateTime.parse('${e["date"]}'),
+                                quantity: int.parse('${e["transaction"]["soldJars"]}'),
+                                vat: 0.1,
+                                unitPrice: double.parse("${widget.invMap["rate18"]["rate"]}"),
+                              )
+                          ),
 
-                              ...widget.invMap["payments20"].map((e) =>
+                          ...widget.invMap["payments20"].map((e) =>
 
-                                  InvoiceItem(
-                                    description: '20L Jar',
-                                    date: DateTime.parse('${e["date"]}'),
-                                    quantity: int.parse('${e["transaction"]["soldJars"]}'),
-                                    vat: 0.1,
-                                    unitPrice: double.parse("${widget.invMap["rate20"]["rate"]}"),
-                                  )
-                              ),
+                          InvoiceItem(
+                          description: '20L Jar',
+                          date: DateTime.parse('${e["date"]}'),
+                          quantity: int.parse('${e["transaction"]["soldJars"]}'),
+                          vat: 0.1,
+                          unitPrice: double.parse("${widget.invMap["rate20"]["rate"]}"),
+                          )
+                          ),
 
-                            ]: widget.invMap["payments18"].length!=0 ?[...widget.invMap["payments18"].map((e) =>
+                          ]: widget.invMap["payments18"].length!=0 ?[...widget.invMap["payments18"].map((e) =>
 
                           InvoiceItem(
                           description: '18L Jar',

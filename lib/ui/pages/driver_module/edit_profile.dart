@@ -17,18 +17,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
         title: Text('Cards'),
         actions: [
 
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => DriverCardsFilterPage()));
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.settings,
+          //     color: Colors.white,
+          //   ),
+          //   onPressed: () {
+          //     // Navigator.push(
+          //     //     context,
+          //     //     MaterialPageRoute(
+          //     //         builder: (context) => DriverCardsFilterPage()));
+          //   },
+          // ),
           IconButton(
             icon: Icon(
               Icons.logout,
@@ -50,64 +50,64 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 "Edit Profile",
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
               ),
-              SizedBox(
-                height: 15,
-              ),
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor),
-                          boxShadow: [
-                            BoxShadow(
-                                spreadRadius: 2,
-                                blurRadius: 10,
-                                color: Colors.black.withOpacity(0.1),
-                                offset: Offset(0, 10))
-                          ],
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(
-                                "https://unsplash.com/photos/Y7C7F26fzZM/download?force=true&w=640",
-                              ))),
-                    ),
-                    Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                            color: Color(0xFF5F6AF8),
-                          ),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                        )),
-                  ],
-                ),
-              ),
+              // SizedBox(
+              //   height: 15,
+              // ),
+              // Center(
+              //   child: Stack(
+              //     children: [
+              //       Container(
+              //         width: 130,
+              //         height: 130,
+              //         decoration: BoxDecoration(
+              //             border: Border.all(
+              //                 width: 4,
+              //                 color: Theme.of(context).scaffoldBackgroundColor),
+              //             boxShadow: [
+              //               BoxShadow(
+              //                   spreadRadius: 2,
+              //                   blurRadius: 10,
+              //                   color: Colors.black.withOpacity(0.1),
+              //                   offset: Offset(0, 10))
+              //             ],
+              //             shape: BoxShape.circle,
+              //             image: DecorationImage(
+              //                 fit: BoxFit.cover,
+              //                 image: NetworkImage(
+              //                   "https://unsplash.com/photos/Y7C7F26fzZM/download?force=true&w=640",
+              //                 ))),
+              //       ),
+              //       Positioned(
+              //           bottom: 0,
+              //           right: 0,
+              //           child: Container(
+              //             height: 40,
+              //             width: 40,
+              //             decoration: BoxDecoration(
+              //               shape: BoxShape.circle,
+              //               border: Border.all(
+              //                 width: 4,
+              //                 color: Theme.of(context).scaffoldBackgroundColor,
+              //               ),
+              //               color: Color(0xFF5F6AF8),
+              //             ),
+              //             child: Icon(
+              //               Icons.edit,
+              //               color: Colors.white,
+              //             ),
+              //           )),
+              //     ],
+              //   ),
+              // ),
               SizedBox(
                 height: 35,
               ),
               buildTextField("Full Name", "Driver 1", false),
-              buildTextField("Mobile Number", "+91 93558 66472", false),
+              // buildTextField("Mobile Number", "+91 93558 66472", false),
               buildTextField("Password", "********", true),
 
               SizedBox(
-                height: 35,
+                height: 5,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

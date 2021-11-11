@@ -200,7 +200,7 @@ class _UnloadJarPageState extends State<UnloadJarPage> {
                   icon: Icon(Icons.calendar_today),
                   label: 'Date',
                   dateFormat: DateFormat.yMMMMd(),
-                  initialValue:  DateTime(2020, 10, 10, 20, 30),
+                  initialValue:  date,
                   onChanged: (value) {
                     setState(() {
                       date = value;

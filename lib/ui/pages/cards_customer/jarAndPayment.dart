@@ -6,6 +6,8 @@ import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/services/whatsapp_service.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/cards_customer/cards.dart';
+import 'package:waterkard/ui/pages/customer_payment_pages/add_payment.dart';
+import 'package:waterkard/ui/pages/driver_payment_pages/new_driver_payment_list.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -24,6 +26,7 @@ class JarAndPaymentPage extends StatefulWidget {
   String driverId;
   String mobileNumber;
 
+
   JarAndPaymentPage(this.customerId,this.driverId,this.mobileNumber);
 
   @override
@@ -38,6 +41,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
   final GlobalKey<FormState> _productsKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _soldJarKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _emptyCollectedKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _prevBaldKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _dateKey = GlobalKey<FormState>();
   String uid;
 
@@ -52,9 +56,12 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
 
   String customerSelected="";
   String productSelected="";
-  String soldJarQty = "";
-  String emptyJarQty = "";
+  int soldJarQty = 0;
+  int emptyJarQty = 0;
   DateTime date = DateTime.now() ;
+  int prevBalance = 0;
+  int currBalance = 0;
+
 
 
   @override
@@ -70,6 +77,8 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
   void getAllCustomers () async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString("vendorId");
+    var bal = prefs.getInt("balance");
+    print(bal);
     print(id);
 
     if(id!=null){
@@ -87,6 +96,8 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
         receivedGroups.forEach((ele) {
 
           setState(() {
+            prevBalance=bal;
+            currBalance=bal;
             allCustomerNames.add(ele["name"]);
             allCustomerIds.add(ele["_id"]);
           });
@@ -158,7 +169,7 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                   icon: Icon(Icons.calendar_today),
                   label: 'Date',
                   dateFormat: DateFormat.yMMMMd(),
-                  initialValue:  DateTime(2020, 10, 10, 20, 30),
+                  initialValue:  date,
                   onChanged: (value) {
                     setState(() {
                       date = value;
@@ -166,27 +177,50 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                   },
 
                 ),
-                CardSettingsText(
+
+                CardSettingsInt(
                   icon: Icon(Icons.format_list_numbered),
                   label: 'Sold Jars',
                   hintText: 'Enter Jar Quantity',
                   key: _soldJarKey,
+                  initialValue: 0,
                   onChanged: (value) {
+                    print(currBalance);
                     setState(() {
-                      soldJarQty = value;
+                      if(value!=null){
+                        soldJarQty = value;
+
+                      }
+
                     });
                   },
                 ),
-                CardSettingsText(
+                CardSettingsInt(
                   icon: Icon(Icons.format_list_numbered),
                   label: 'Empty Collected',
                   hintText: 'Enter Jar Quantity',
                   key: _emptyCollectedKey,
+                  initialValue: 0,
                   onChanged: (value) {
+                    print(currBalance);
                     setState(() {
-                      emptyJarQty = value;
+                      if( value!=null){
+                        emptyJarQty = value;
+
+
+                      }
+
                     });
                   },
+                ),
+                CardSettingsText(
+
+                  icon: Icon(Icons.format_list_numbered),
+                  label: 'Balance: ${prevBalance+soldJarQty-emptyJarQty}',
+                  key: _prevBaldKey,
+
+
+
                 ),
 
 
@@ -227,7 +261,8 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                               "product":productSelected,
                               "customer":this.widget.customerId,
                               "soldJars":soldJarQty,
-                              "emptyCollected":emptyJarQty
+                              "emptyCollected":emptyJarQty,
+                              "status":"completed"
                             }));
                         var body = response.body;
 
@@ -261,6 +296,47 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                                 ),
                                 SizedBox(height: 20,),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // ShareButton(
+                                    //   onPressed: (){
+                                    //     WhatsAppService().toContact(
+                                    //       contactNumber: widget.mobileNumber,
+                                    //       message: "Order has been logged for $soldJarQty $productSelected jars.",
+                                    //     );
+                                    //   },
+                                    //   height: 40,
+                                    //   paddingHorizontal: 15,
+                                    //   textSize: 18,
+                                    // ),
+                                    MaterialButton(
+                                      child: Text(
+                                        "Add Payment",
+                                        style: TextStyle(
+                                            fontSize: 18
+                                        ),
+                                      ),
+                                      onPressed: (){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => AddPayment()));
+                                      },
+                                    ),
+                                    // MaterialButton(
+                                    //   child: Text(
+                                    //     "Cancel",
+                                    //     style: TextStyle(
+                                    //         fontSize: 18
+                                    //     ),
+                                    //   ),
+                                    //   onPressed: (){
+                                    //     Navigator.pushReplacement(
+                                    //         context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
+                                    //   },
+                                    // ),
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     ShareButton(
@@ -274,6 +350,18 @@ class _JarAndPaymentPageState extends State<JarAndPaymentPage> {
                                       paddingHorizontal: 15,
                                       textSize: 18,
                                     ),
+                                    // MaterialButton(
+                                    //   child: Text(
+                                    //     "Add Payment",
+                                    //     style: TextStyle(
+                                    //         fontSize: 12
+                                    //     ),
+                                    //   ),
+                                    //   onPressed: (){
+                                    //     Navigator.pushReplacement(
+                                    //         context, MaterialPageRoute(builder: (context) => NewDriverPaymentList()));
+                                    //   },
+                                    // ),
                                     MaterialButton(
                                       child: Text(
                                         "Cancel",

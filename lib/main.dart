@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         "/driverLogin" : (context) => DriverLogin(),
         "/driverHomePage" : (context) => DriverHomePage(),
       },
-      home: ChooseUserTypePage(),
+      home: OnboardingPage(),
     );
   }
 }

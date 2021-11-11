@@ -24,15 +24,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
           fit: BoxFit.cover,
         ),
         decoration: PageDecoration(
-          pageColor: Color(0xFFFFFFFF),
-          bodyTextStyle: TextStyle(color: Colors.black, fontSize: 16),
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 24),
+          pageColor: Color(0xFF192A56),
+          bodyTextStyle: TextStyle(color: Colors.white, fontSize: 16),
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
           imagePadding: EdgeInsets.zero,
         )),
     PageViewModel(
-        title: "Title of the second page",
+        title: "Add Customers",
         body:
-        "Here you can write the description of the page, to explain someting...",
+        "And create route-wise groups.",
         image: Center(
           child: Image.asset("assets/onboarding-image-2.jpg", height: 175.0),
         ),
@@ -42,15 +42,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
           fit: BoxFit.cover,
         ),
         decoration: PageDecoration(
-          pageColor: Color(0xFFFFFFFF),
-          bodyTextStyle: TextStyle(color: Colors.black, fontSize: 16),
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 24),
+          pageColor: Color(0xFF192A56),
+          bodyTextStyle: TextStyle(color: Colors.white, fontSize: 16),
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
           imagePadding: EdgeInsets.zero,
         )),
     PageViewModel(
-        title: "Title of the third page",
+        title: "Follow the above process",
         body:
-        "Here you can write the description of the page, to explain someting...",
+        "And grow your business",
         image: Center(
           child: Image.asset("assets/onboarding-image-4.png", height: 175.0),
         ),
@@ -60,9 +60,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           fit: BoxFit.cover,
         ),
         decoration: PageDecoration(
-          pageColor: Color(0xFFFFFFFF),
-          bodyTextStyle: TextStyle(color: Colors.black, fontSize: 16),
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 24),
+          pageColor: Color(0xFF192A56),
+          bodyTextStyle: TextStyle(color: Colors.white, fontSize: 16),
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 24),
           imagePadding: EdgeInsets.zero,
         )),
   ];
@@ -83,19 +83,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
               context, MaterialPageRoute(builder: (context) => ChooseUserTypePage()));
         },
         showSkipButton: true,
-        skip: const Text('Skip',style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black)),
+        skip: const Text('Skip',style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
         next: Icon(
           Icons.arrow_right,
-          color: Colors.black,
+          color: Colors.white,
           size: 30.0,
         ),
         done: Text("Done",
-            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black)),
+            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
         dotsDecorator: DotsDecorator(
             size: Size.square(10.0),
             activeSize: Size(20.0, 10.0),
             activeColor: Colors.deepOrange,
-            color: Colors.black26,
+            color: Colors.black54,
             spacing: EdgeInsets.symmetric(horizontal: 3.0),
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25.0))),

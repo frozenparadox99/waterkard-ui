@@ -198,26 +198,26 @@ class _DailyInventoryUnloadPageState extends State<DailyInventoryUnloadPage> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                OutlinedButton(
-                  onPressed: () {},
-                  child: Text('Load Jar'),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                OutlinedButton(
-                  onPressed: () {},
-                  child: Text('Unload Jar'),
-                ),
-              ],
-            ),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     OutlinedButton(
+            //       onPressed: () {},
+            //       child: Text('Load Jar'),
+            //     ),
+            //     SizedBox(
+            //       width: 20,
+            //     ),
+            //     OutlinedButton(
+            //       onPressed: () {},
+            //       child: Text('Unload Jar'),
+            //     ),
+            //   ],
+            // ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

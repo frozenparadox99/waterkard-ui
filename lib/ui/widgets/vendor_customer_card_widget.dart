@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/services/shared_prefs.dart';
 import 'package:waterkard/ui/pages/add_new_customer_pages/product_card.dart';
 import 'package:waterkard/ui/pages/cards_customer/jarAndPayment.dart';
+import 'package:waterkard/ui/pages/cards_customer/newCustomerCards.dart';
 import 'package:waterkard/ui/pages/driver_module/card/driver_jar_and_payments.dart';
 import 'package:waterkard/ui/pages/transactions_pages/daily_transactions_list.dart';
 import 'package:waterkard/ui/pages/transactions_pages/vendor_daily_transactions.dart';
+import 'package:waterkard/ui/widgets/shared_button.dart';
 import 'package:waterkard/utils.dart';
 import 'package:waterkard/ui/pages/map_views/show_location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+
+import 'dialogue_box.dart';
 
 
 class VendorCustomerCard extends StatelessWidget {
@@ -91,7 +100,10 @@ class VendorCustomerCard extends StatelessWidget {
                   ),
                   SizedBox(width: 5,),
                   InkWell(
-                    onTap: (){
+                    onTap: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                       prefs.setInt("balance", customerMap["totalBalance"]);
+
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -103,26 +115,129 @@ class VendorCustomerCard extends StatelessWidget {
                       size: 30,
                     ),
                   ),
+                  // SizedBox(width: 5,),
+                  // InkWell(
+                  //     onTap: (){
+                  //       Navigator.pushReplacement(
+                  //           context, MaterialPageRoute(builder: (context) => ProductCard(customerMap["_id"])));
+                  //     },
+                  //     child: Icon(Icons.shop)),
                   SizedBox(width: 5,),
                   InkWell(
-                      onTap: (){
-                        Navigator.pushReplacement(
-                            context, MaterialPageRoute(builder: (context) => ProductCard(customerMap["_id"])));
-                      },
-                      child: Icon(Icons.shop)),
-                  // InkWell(
-                  //   onTap: (){
-                  //
-                  //   },
-                  //   child: Container(
-                  //     height: 27,
-                  //     width: 27,
-                  //     decoration: BoxDecoration(
-                  //         shape: BoxShape.circle,
-                  //         border: Border.all(color: Colors.red, width: 3)
-                  //     ),
-                  //   ),
-                  // ),
+                    onTap: (){
+
+                      if(customerMap["status"]=="completed" || customerMap["status"]=="skipped")
+                        {
+                          return;
+                        }
+
+                      successMessageDialogue(
+                        context: context,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Icon(
+                                Icons.library_add_check_outlined,
+                                color: Colors.blue,
+                                size: 100,
+                              ),
+                            ),
+                            SizedBox(height: 20,),
+                            Text(
+                              "Are you sure you want to skip?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            SizedBox(height: 20,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                FilledButton(
+                                  text:"Yes",
+                                  onPressed: () async {
+                                    DateTime date = DateTime.now() ;
+                                    String newDate = "${date.day}/${date.month}/${date.year}";
+
+
+                                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    var id = prefs.getString("vendorId");
+                                    print(id);
+
+                                    if(id!=null){
+                                      print(id);
+                                      print(newDate);
+                                      print(customerMap["driver"]);
+                                      print(customerMap["_id"]);
+                                      String apiURL =
+                                          "$API_BASE_URL/api/v1/vendor/driver/add-transaction";
+                                      var response = await http.post(Uri.parse(apiURL),
+                                          headers: <String, String>{
+                                            'Content-Type': 'application/json; charset=UTF-8',
+                                          },
+                                          body:jsonEncode( <String, dynamic>{
+                                            "vendor":id,
+                                            "date":newDate,
+                                            "driver":customerMap["driver"],
+                                            "customer":customerMap["_id"],
+                                            "status":"skipped"
+                                          }));
+                                      var body = response.body;
+
+                                      var decodedJson = jsonDecode(body);
+
+                                      print(body);
+                                      print(decodedJson);
+                                      if(decodedJson["success"]!=null && decodedJson["success"]==true){
+                                        Navigator.pushReplacement(
+                                            context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
+                                      }
+                                    }
+
+
+
+                                  },
+                                  // height: 40,
+                                  // paddingHorizontal: 15,
+                                  // textSize: 18,
+                                ),
+                                MaterialButton(
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                        fontSize: 18
+                                    ),
+                                  ),
+                                  onPressed: (){
+                                    Navigator.pushReplacement(
+                                        context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
+                                  },
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ).then((value) {
+                        if(value!=null && value=="closePage"){
+                          Navigator.pushReplacement(
+                              context, MaterialPageRoute(builder: (context) => NewCustomerCards()));
+                        }
+                      });
+
+                    },
+                    child: Container(
+                      height: 27,
+                      width: 27,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: customerMap["status"]=="completed"?Colors.green: customerMap["status"]=="skipped"?Colors.red :Colors.yellow, width: 3)
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -213,7 +328,7 @@ class VendorCustomerCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Balance\nPayment",
+                        int.parse("${customerMap['balancePayment'].toString()}")>0?"Balance\nPayment":"Advance\nPayment",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 17,
@@ -221,10 +336,11 @@ class VendorCustomerCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        customerMap['totalDeposit'].toString(),
+                        int.parse("${customerMap['balancePayment'].toString()}")>0?" ${customerMap['balancePayment'].toString()}":" ${int.parse("${customerMap['balancePayment'].toString()}")*-1}",
                         style: TextStyle(
                             fontSize: 17,
-                            fontWeight: FontWeight.bold
+                            fontWeight: FontWeight.bold,
+                          color: int.parse("${customerMap['balancePayment'].toString()}")>0?Colors.red:Colors.green,
                         ),
                       ),
                     ],

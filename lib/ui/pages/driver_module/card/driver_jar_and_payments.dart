@@ -226,7 +226,8 @@ class _DriverJarAndPaymentPageState extends State<DriverJarAndPaymentPage> {
                             "product":productSelected,
                             "customer":this.widget.customerId,
                             "soldJars":soldJarQty,
-                            "emptyCollected":emptyJarQty
+                            "emptyCollected":emptyJarQty,
+                            "status":"completed"
                           }));
                       var body = response.body;
 

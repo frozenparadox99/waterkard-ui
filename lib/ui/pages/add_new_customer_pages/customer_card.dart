@@ -39,6 +39,7 @@ class _CustomerCardState extends State<CustomerCard> {
   final GlobalKey<FormState> _depositKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _areaKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _balancePaymentKey = GlobalKey<FormState>();
   String uid;
 
   var allGroupNames = <String>[];
@@ -60,6 +61,7 @@ class _CustomerCardState extends State<CustomerCard> {
   String area;
   double latitude;
   double longitude;
+  String balancePayment;
 
   @override
   void initState() {
@@ -349,11 +351,22 @@ class _CustomerCardState extends State<CustomerCard> {
                 CardSettingsText(
                   icon: Icon(Icons.credit_card),
                   label: 'Deposit',
-                  hintText: 'Enter Customer Deposit',
+                  hintText: 'Enter Security Deposit',
                   key: _depositKey,
                   onChanged: (value) {
                     setState(() {
                       deposit = value;
+                    });
+                  },
+                ),
+                CardSettingsText(
+                  icon: Icon(Icons.credit_card_rounded),
+                  label: 'Balance Payment',
+                  hintText: 'Enter balance',
+                  key: _balancePaymentKey,
+                  onChanged: (value) {
+                    setState(() {
+                      balancePayment = value;
                     });
                   },
                 ),
@@ -407,7 +420,8 @@ class _CustomerCardState extends State<CustomerCard> {
                               "deposit":deposit,
                               "rate":rate,
                               "email":email,
-                              "area":area
+                              "area":area,
+                              "balancePayment":balancePayment,
                             }));
                         var body = response.body;
 

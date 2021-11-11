@@ -18,11 +18,11 @@ import 'dart:convert';
 
 import 'package:waterkard/ui/widgets/Sidebar_Driver.dart';
 import 'package:waterkard/ui/widgets/card_widgets.dart';
+import 'package:waterkard/ui/widgets/customer_list_card.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
 import 'package:waterkard/ui/widgets/vendor_customer_card_widget.dart';
 import 'package:waterkard/utils.dart';
 
-import 'jarAndPayment.dart';
 
 
 var items = [
@@ -160,14 +160,14 @@ const courseStyle = TextStyle(
     fontSize: 20
 );
 
-class NewCustomerCards extends StatefulWidget {
-  const NewCustomerCards({Key key}) : super(key: key);
+class CustomerListDsisplay extends StatefulWidget {
+  const CustomerListDsisplay({Key key}) : super(key: key);
 
   @override
-  _NewCustomerCardsState createState() => _NewCustomerCardsState();
+  _CustomerListDsisplayState createState() => _CustomerListDsisplayState();
 }
 
-class _NewCustomerCardsState extends State<NewCustomerCards> {
+class _CustomerListDsisplayState extends State<CustomerListDsisplay> {
   String uid;
   List<Widget> _rows;
   List<Widget> _rows2;
@@ -419,11 +419,7 @@ class _NewCustomerCardsState extends State<NewCustomerCards> {
     var response = await http.get(Uri.parse(apiURL));
     var body = response.body;
 
-    print(body);
-
     Map map  = jsonDecode(body);
-
-    print(map);
 
     String stockApiURL =
         "$API_BASE_URL/api/v1/vendor/stock-details?vendor=$id";
@@ -437,13 +433,13 @@ class _NewCustomerCardsState extends State<NewCustomerCards> {
     if(stockMap["success"]!=null && stockMap["success"] == true){
       var metaData = stockMap["data"];
       setState(() {
-         missingJars = metaData["missingJars"];
-         loadedJars = metaData["jarsInVehicles"];
-         godownStock = metaData["godownstock"];
-         totalSold = metaData["soldJars"];
-         emptyJars = metaData["emptyJars"];
-         customerBalance = metaData["customerBalance"];
-         totalJars = metaData["totalStock"] ;
+        missingJars = metaData["missingJars"];
+        loadedJars = metaData["jarsInVehicles"];
+        godownStock = metaData["godownstock"];
+        totalSold = metaData["soldJars"];
+        emptyJars = metaData["emptyJars"];
+        customerBalance = metaData["customerBalance"];
+        totalJars = metaData["totalStock"] ;
       });
     }
 
@@ -460,7 +456,7 @@ class _NewCustomerCardsState extends State<NewCustomerCards> {
     _rows2 = list.map((item) {
       print(item);
       // return customerCard(item);
-      return VendorCustomerCard(customerMap: item,);
+      return CustomerListCardWidget(customerMap: item,);
     }).toList();
 
     setState(() {
@@ -491,7 +487,7 @@ class _NewCustomerCardsState extends State<NewCustomerCards> {
     return Scaffold(
       drawer: Sidebar(),
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Customers'),
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle),
@@ -585,7 +581,7 @@ class _NewCustomerCardsState extends State<NewCustomerCards> {
                   child: body(),
                 ),
               ),
-              bottomSheet(size,missingJars, loadedJars, totalJars, totalSold, godownStock, emptyJars, customerBalance),
+
               SizedBox(
                 height: 10,
               )
@@ -981,12 +977,7 @@ class _NewCustomerCardsState extends State<NewCustomerCards> {
                     },
                     child: Icon(Icons.shop)),
                 InkWell(
-                  onTap: (){
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => JarAndPaymentPage(item["customerId"],item["driverId"],item["mobileNumber"])));
-                  },
+                  onTap: (){},
                   child: Icon(Icons.add_circle_outline_sharp,color: Colors.white,),
                 ),
 

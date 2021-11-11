@@ -4,12 +4,17 @@ import 'package:waterkard/ui/pages/add_new_group_pages/list_groups.dart';
 import 'package:waterkard/ui/pages/cards_customer/cards.dart';
 import 'package:waterkard/ui/pages/cards_customer/newCustomerCards.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
+import 'package:waterkard/ui/pages/customer_payment_pages/new_customer_payment_list.dart';
 import 'package:waterkard/ui/pages/deposite_pages/deposite_list.dart';
 import 'package:waterkard/ui/pages/dispenser_pages/dispenser_list.dart';
 import 'package:waterkard/ui/pages/driver_payment_pages/driver_payment_list.dart';
+import 'package:waterkard/ui/pages/driver_payment_pages/new_driver_payment_list.dart';
+import 'package:waterkard/ui/pages/edit_vendor.dart';
+import 'package:waterkard/ui/pages/how_to_use/how_to_use.dart';
 import 'package:waterkard/ui/pages/inventory_pages/daily_inventory/daily_inventory_load.dart';
 import 'package:waterkard/ui/pages/inventory_pages/total_inventory/total_inventory_add.dart';
 import 'package:waterkard/ui/pages/invoice_pages/select_invoice.dart';
+import 'package:waterkard/ui/pages/my_customers/customer_list.dart';
 import 'package:waterkard/ui/pages/my_products_pages/all_products.dart';
 import 'package:waterkard/ui/pages/order/orders_dashboard.dart';
 import 'package:waterkard/ui/pages/vendor_home_page.dart';
@@ -108,14 +113,14 @@ class Sidebar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => OrderDashboard()));
             },
           ),
-          // ListTile(
-          //   leading: Icon(Icons.shop),
-          //   title: Text('My Products'),
-          //   onTap: () {
-          //     Navigator.push(context,
-          //         MaterialPageRoute(builder: (context) => AllProducts()));
-          //   },
-          // ),
+          ListTile(
+            leading: Icon(Icons.shop),
+            title: Text('My Customers'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CustomerListDsisplay()));
+            },
+          ),
           ExpansionTile(
             leading: Icon(Icons.payment),
             title: Text('Payments'),
@@ -126,7 +131,7 @@ class Sidebar extends StatelessWidget {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CustomerPaymentList()));
+                          builder: (context) => NewCustomerPaymentList()));
                 },
                 child: Text('Customer Payment'),
               ),
@@ -136,7 +141,7 @@ class Sidebar extends StatelessWidget {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DriverPaymentList()));
+                          builder: (context) => NewDriverPaymentList()));
                 },
                 child: Text('Driver Payment     '),
               ),
@@ -168,15 +173,15 @@ class Sidebar extends StatelessWidget {
           //     ),
           //   ],
           // ),
-          // Divider(),
-          // ListTile(
-          //   leading: Icon(Icons.inventory),
-          //   title: Text('Invoice'),
-          //   onTap: () {
-          //     Navigator.push(context,
-          //         MaterialPageRoute(builder: (context) => SelectInvoice()));
-          //   },
-          // ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.inventory),
+            title: Text('Invoice'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SelectInvoice()));
+            },
+          ),
           // ListTile(
           //   leading: Icon(Icons.description),
           //   title: Text('Statements'),
@@ -184,11 +189,21 @@ class Sidebar extends StatelessWidget {
           // ),
           Divider(),
           ListTile(
+            leading: Icon(
+              Icons.vpn_key_outlined,
+            ),
+            title: Text('Edit Profile'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => EditVendor()));
+            },
+          ),
+          ListTile(
             title: Text('How to use'),
             leading: Icon(Icons.info_outline),
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => VendorHomePage()));
+                  MaterialPageRoute(builder: (context) => HowToUse()));
             },
           ),
         ],

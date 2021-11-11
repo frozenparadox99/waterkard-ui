@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
+import 'package:waterkard/ui/pages/customer_payment_pages/new_customer_payment_list.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
 import 'package:card_settings/card_settings.dart';
@@ -268,7 +269,9 @@ class _AddPaymentState extends State<AddPayment> {
                                       "mode":paymentMethod,
                                       "amount":amount,
                                       "chequeDetails":chequeNumber,
-                                      "onlineAppForPayment":onlineApp
+                                      "onlineAppForPayment":onlineApp,
+                                      "from":"Customer",
+                                      "to":"Vendor"
                                     }));
                                 var body = response.body;
 
@@ -279,7 +282,7 @@ class _AddPaymentState extends State<AddPayment> {
 
                                 if(decodedJson["success"]!=null && decodedJson["success"]==true){
                                   Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                      context, MaterialPageRoute(builder: (context) => NewCustomerPaymentList()));
                                 }
                                 else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
                                   successMessageDialogue(
@@ -312,7 +315,7 @@ class _AddPaymentState extends State<AddPayment> {
                                               ),
                                               onPressed: (){
                                                 Navigator.pushReplacement(
-                                                    context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                                    context, MaterialPageRoute(builder: (context) => NewCustomerPaymentList()));
                                               },
                                             ),
                                           ],
@@ -322,7 +325,7 @@ class _AddPaymentState extends State<AddPayment> {
                                   ).then((value) {
                                     if(value!=null && value=="closePage"){
                                       Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                          context, MaterialPageRoute(builder: (context) => NewCustomerPaymentList()));
                                     }
                                   });
                                 }
@@ -354,7 +357,7 @@ class _AddPaymentState extends State<AddPayment> {
                                               ),
                                               onPressed: (){
                                                 Navigator.pushReplacement(
-                                                    context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                                    context, MaterialPageRoute(builder: (context) => NewCustomerPaymentList()));
                                               },
                                             ),
                                           ],
@@ -364,7 +367,7 @@ class _AddPaymentState extends State<AddPayment> {
                                   ).then((value) {
                                     if(value!=null && value=="closePage"){
                                       Navigator.pushReplacement(
-                                          context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                          context, MaterialPageRoute(builder: (context) => NewCustomerPaymentList()));
                                     }
                                   });
                                 }
@@ -383,7 +386,7 @@ class _AddPaymentState extends State<AddPayment> {
                         CardSettingsButton(
                           onPressed: (){
                             Navigator.pushReplacement(
-                                context, MaterialPageRoute(builder: (context) => CustomerPaymentList()));
+                                context, MaterialPageRoute(builder: (context) => NewCustomerPaymentList()));
                           },
                           label: 'CANCEL',
                           isDestructive: true,

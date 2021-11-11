@@ -62,6 +62,7 @@ class _CustomerPaymentListState extends State<CustomerPaymentList> {
     if(id!=null){
       String apiURL =
           "$API_BASE_URL/api/v1/vendor/customer/deposits?vendor=$id";
+      print(apiURL);
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 

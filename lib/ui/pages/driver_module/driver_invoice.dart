@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:waterkard/api/constants.dart';
 import 'package:waterkard/services/misc_services.dart';
 import 'package:waterkard/ui/pages/customer_payment_pages/customer_payment_list.dart';
+import 'package:waterkard/ui/pages/driver_module/driver_invoice_pdf.dart';
 import 'package:waterkard/ui/pages/invoice_pages/invoice_pdf.dart';
 import 'package:waterkard/ui/pages/vendor_login_page.dart';
 import 'package:waterkard/ui/widgets/Sidebar.dart';
@@ -13,16 +14,17 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waterkard/ui/widgets/Sidebar_Driver.dart';
 import 'package:waterkard/ui/widgets/dialogue_box.dart';
 
-class SelectInvoice extends StatefulWidget {
-  const SelectInvoice({Key key}) : super(key: key);
+class DriverInvoice extends StatefulWidget {
+  const DriverInvoice({Key key}) : super(key: key);
 
   @override
-  _SelectInvoiceState createState() => _SelectInvoiceState();
+  _DriverInvoiceState createState() => _DriverInvoiceState();
 }
 
-class _SelectInvoiceState extends State<SelectInvoice> {
+class _DriverInvoiceState extends State<DriverInvoice> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final GlobalKey<FormState> _customerKey = GlobalKey<FormState>();
@@ -50,12 +52,12 @@ class _SelectInvoiceState extends State<SelectInvoice> {
 
   void getAllCustomers () async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.getString("vendorId");
+    var id = prefs.getString("driverId");
     print(id);
 
     if(id!=null){
       String apiURL =
-          "$API_BASE_URL/api/v1/vendor/customer?vendor=$id";
+          "$API_BASE_URL/api/v1/driver/customers?driver=$id";
       var response = await http.get(Uri.parse(apiURL));
       var body = response.body;
 
@@ -81,18 +83,18 @@ class _SelectInvoiceState extends State<SelectInvoice> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: Sidebar(),
+        drawer: SidebarDriver(),
         appBar: AppBar(
           title: Text('Invoice'),
           actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
-              },
-            )
+            // IconButton(
+            //   icon: Icon(Icons.logout),
+            //   onPressed: () async {
+            //     await FirebaseAuth.instance.signOut();
+            //     Navigator.pushReplacement(
+            //         context, MaterialPageRoute(builder: (context) => VendorLoginPage()));
+            //   },
+            // )
           ],
         ),
         body: SingleChildScrollView(
@@ -171,7 +173,7 @@ class _SelectInvoiceState extends State<SelectInvoice> {
 
 
                             SharedPreferences prefs = await SharedPreferences.getInstance();
-                            var id = prefs.getString("vendorId");
+                            var id = prefs.getString("driverVendor");
                             print(id);
 
                             if(id!=null){
@@ -192,7 +194,7 @@ class _SelectInvoiceState extends State<SelectInvoice> {
 
 
                                 Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => InvoicePdf(decodedJson["data"] )));
+                                    context, MaterialPageRoute(builder: (context) => DriverInvoicePdf(decodedJson["data"] )));
                               }
                               else if (decodedJson["success"]!=null && decodedJson["success"]==false && decodedJson["message"]!=null){
                                 successMessageDialogue(
@@ -225,7 +227,7 @@ class _SelectInvoiceState extends State<SelectInvoice> {
                                             ),
                                             onPressed: (){
                                               Navigator.pushReplacement(
-                                                  context, MaterialPageRoute(builder: (context) => SelectInvoice()));
+                                                  context, MaterialPageRoute(builder: (context) => DriverInvoice()));
                                             },
                                           ),
                                         ],
@@ -235,7 +237,7 @@ class _SelectInvoiceState extends State<SelectInvoice> {
                                 ).then((value) {
                                   if(value!=null && value=="closePage"){
                                     Navigator.pushReplacement(
-                                        context, MaterialPageRoute(builder: (context) => SelectInvoice()));
+                                        context, MaterialPageRoute(builder: (context) => DriverInvoice()));
                                   }
                                 });
                               }
@@ -267,7 +269,7 @@ class _SelectInvoiceState extends State<SelectInvoice> {
                                             ),
                                             onPressed: (){
                                               Navigator.pushReplacement(
-                                                  context, MaterialPageRoute(builder: (context) => SelectInvoice()));
+                                                  context, MaterialPageRoute(builder: (context) => DriverInvoice()));
                                             },
                                           ),
                                         ],
@@ -277,7 +279,7 @@ class _SelectInvoiceState extends State<SelectInvoice> {
                                 ).then((value) {
                                   if(value!=null && value=="closePage"){
                                     Navigator.pushReplacement(
-                                        context, MaterialPageRoute(builder: (context) => SelectInvoice()));
+                                        context, MaterialPageRoute(builder: (context) => DriverInvoice()));
                                   }
                                 });
                               }

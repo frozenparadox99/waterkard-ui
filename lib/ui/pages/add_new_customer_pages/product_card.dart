@@ -29,6 +29,7 @@ class _ProductCardState extends State<ProductCard> {
   final GlobalKey<FormState> _balanceKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _dispensersKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _depositKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _balancePaymentKey = GlobalKey<FormState>();
   String uid;
 
   String product;
@@ -36,6 +37,7 @@ class _ProductCardState extends State<ProductCard> {
   String balance;
   String dispensers;
   String deposit;
+  String balancePayment;
 
   List allProductsForCustomer = [];
 
@@ -170,11 +172,22 @@ class _ProductCardState extends State<ProductCard> {
                         CardSettingsText(
                           icon: Icon(Icons.credit_card),
                           label: 'Deposit',
-                          hintText: 'Enter Customer Deposit',
+                          hintText: 'Enter Security Deposit',
                           key: _depositKey,
                           onChanged: (value) {
                             setState(() {
                               deposit = value;
+                            });
+                          },
+                        ),
+                        CardSettingsText(
+                          icon: Icon(Icons.credit_card_rounded),
+                          label: 'Balance Payment',
+                          hintText: 'Enter balance',
+                          key: _balancePaymentKey,
+                          onChanged: (value) {
+                            setState(() {
+                              balancePayment = value;
                             });
                           },
                         ),
@@ -210,7 +223,8 @@ class _ProductCardState extends State<ProductCard> {
                                       "dispenser":dispensers,
                                       "deposit":deposit,
                                       "rate":rate,
-                                      "customer":widget.customerId
+                                      "customer":widget.customerId,
+                                      "balancePayment":balancePayment,
                                     }));
                                 var body = response.body;
 
